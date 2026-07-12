@@ -1,0 +1,681 @@
+/* ==========================================================================
+   DÔKO Studio — Hoja de estilos oficial
+   Estética de lujo oscuro: serif elegante (Fraunces) + detalles editoriales.
+   El negro es el protagonista, el naranja el acento principal y el verde
+   azulado del logo aparece como acento secundario sutil.
+   Usar SIEMPRE las variables de :root, nunca colores sueltos.
+   ========================================================================== */
+
+:root {
+  /* Colores de marca — variante oscura */
+  --negro: #131518;          /* fondo principal oscuro (rol protagonista) */
+  --negro-suave: #1C1F24;    /* tarjetas y barras sobre fondo negro */
+  --azul: #105A6B;           /* verde azulado del logo: acento secundario sutil */
+  --azul-claro: #2E8FA6;     /* versión clara del verde, legible sobre fondos negros */
+  --naranja: #EB5B34;
+  --naranja-hover: #D44E2A;
+  --crema: #F7F4EF;
+  --blanco: #FFFFFF;
+  --tinta: #191B1E;          /* texto de titulares sobre claro */
+  --gris-texto: #5D6167;
+  --linea: #E4DED4;
+  --linea-oscura: rgba(255, 255, 255, 0.14);
+
+  /* Tipografía */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Manrope", "Segoe UI", sans-serif;
+
+  /* Métricas */
+  --radio: 22px;
+  --radio-sm: 12px;
+  --ancho: 1160px;
+  --sombra: 0 22px 55px rgba(0, 0, 0, 0.22);
+}
+
+/* ---------- Reset básico ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--tinta);
+  background: var(--blanco);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+
+/* Los anclajes (#servicios, #contacto…) no quedan tapados por el header fijo */
+main section { scroll-margin-top: 92px; }
+
+/* Selección de texto con el naranja de marca */
+::selection { background: var(--naranja); color: var(--blanco); }
+
+/* Foco visible accesible en botones, enlaces y campos */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--naranja);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.container {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Tipografía ---------- */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--tinta);
+  line-height: 1.14;
+}
+
+h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); }
+h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); }
+h3 { font-size: 1.25rem; }
+
+h1 em, h2 em {
+  font-style: italic;
+  color: var(--naranja);
+}
+
+/* Primera palabra destacada en el verde del logo (solo el título del hero).
+   Sobre fondos oscuros usa la versión clara para mantener la legibilidad. */
+.destacado { color: var(--azul); }
+.hero .destacado,
+.section-dark .destacado { color: var(--azul-claro); }
+
+/* Eyebrow editorial con marcador cuadrado naranja (de la Opción C) */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--azul); /* toque sutil del verde azulado del logo */
+  margin-bottom: 16px;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--naranja);
+  flex-shrink: 0;
+}
+
+.lead {
+  font-size: 1.08rem;
+  margin-top: 18px;
+}
+
+/* ---------- Botones (píldora, de la Opción A) ---------- */
+.btn {
+  display: inline-block;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 2px solid transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.btn-primary {
+  background: var(--naranja);
+  color: var(--blanco);
+}
+.btn-primary:hover { background: var(--naranja-hover); }
+
+/* Botón claro para fondos negros */
+.btn-light {
+  border-color: rgba(255, 255, 255, 0.55);
+  color: var(--blanco);
+  background: transparent;
+}
+.btn-light:hover { background: var(--blanco); color: var(--negro); }
+
+/* Botón negro para la banda naranja */
+.btn-black {
+  background: var(--negro);
+  color: var(--blanco);
+}
+.btn-black:hover { background: var(--negro-suave); }
+
+.btn-block { width: 100%; }
+
+/* ---------- Header (claro, para lucir el logo a color) ---------- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--linea);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 78px;
+}
+
+.brand-logo { height: 42px; width: auto; }
+
+.nav {
+  display: flex;
+  gap: 26px;
+  margin-left: auto;
+}
+
+.nav a {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--tinta);
+  transition: color 0.2s ease;
+}
+.nav a:hover { color: var(--naranja); }
+
+.header-cta { padding: 11px 24px; }
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+.nav-toggle span {
+  width: 24px;
+  height: 2px;
+  background: var(--tinta);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* ---------- Hero (negro, estilo lujo) ---------- */
+.hero {
+  background:
+    radial-gradient(ellipse 60% 50% at 12% 0%, rgba(16, 90, 107, 0.22), transparent 65%),
+    radial-gradient(ellipse 50% 45% at 95% 90%, rgba(235, 91, 52, 0.10), transparent 60%),
+    var(--negro);
+  padding: 88px 0 0;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.hero-text { color: rgba(255, 255, 255, 0.82); }
+
+.hero-text h1 { color: var(--blanco); }
+.hero-text .eyebrow { color: rgba(255, 255, 255, 0.65); }
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+/* Barra de estadísticas flotante que se asoma sobre la siguiente sección
+   (estilo referencia de lujo). El 50% inferior invade la sección siguiente,
+   compensado con el padding-top extra de #servicios. */
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--negro-suave);
+  border: 1px solid rgba(16, 90, 107, 0.55); /* halo sutil del verde azulado */
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  transform: translateY(50%);
+  position: relative;
+  z-index: 2;
+}
+
+.hero-stats li {
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-stats li + li { border-left: 1px solid var(--linea-oscura); }
+
+.hero-stats strong {
+  font-family: var(--font-display);
+  font-size: 2.05rem;
+  color: var(--naranja);
+}
+
+.hero-stats span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---------- Placeholders de fotos (.ph) ----------
+   Reemplazar cada <div class="ph"> por <img class="ph" src siguiendo PLAN.md §6 */
+.ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  background:
+    linear-gradient(145deg, rgba(40, 44, 50, 0.95), rgba(19, 21, 24, 0.98)),
+    repeating-linear-gradient(45deg, transparent 0 18px, rgba(255,255,255,0.05) 18px 36px);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radio);
+  object-fit: cover; /* aplica cuando se convierta en <img> */
+}
+
+.ph-hero {
+  min-height: 440px;
+  border: 1px solid var(--linea-oscura);
+}
+.ph-card { min-height: 200px; border-radius: var(--radio-sm); }
+.ph-tile { min-height: 260px; }
+
+/* ---------- Secciones ---------- */
+.section { padding: 96px 0; }
+
+.section-cream { background: var(--crema); }
+
+/* Compensa la barra de estadísticas que invade esta sección */
+#servicios { padding-top: 170px; }
+
+.section-head {
+  max-width: 660px;
+  margin-bottom: 56px;
+}
+
+.section-dark {
+  background: var(--negro);
+  color: rgba(255, 255, 255, 0.82);
+}
+.section-dark h2, .section-dark h3 { color: var(--blanco); }
+.section-dark .eyebrow { color: rgba(255, 255, 255, 0.6); }
+
+/* ---------- Tarjetas de servicios / testimonios (de la Opción A) ---------- */
+.cards-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.card {
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+}
+
+/* Zoom sutil de la foto al pasar por la tarjeta */
+.card .ph-card { transition: transform 0.45s ease; }
+.card:hover .ph-card { transform: scale(1.025); }
+
+.card p { color: var(--gris-texto); font-size: 0.95rem; }
+
+.link-more {
+  margin-top: auto;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--naranja);
+  transition: color 0.2s ease;
+}
+.link-more:hover { color: var(--azul); }
+
+/* ---------- Diferenciales: retícula con bordes (de la Opción C) ---------- */
+.features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border: 1px solid var(--linea-oscura);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+
+.feature {
+  padding: 36px 32px;
+  border-right: 1px solid var(--linea-oscura);
+  border-bottom: 1px solid var(--linea-oscura);
+  transition: background 0.3s ease;
+}
+
+.feature:hover { background: var(--negro-suave); }
+
+.feature:nth-child(2n) { border-right: none; }
+.feature:nth-child(n+3) { border-bottom: none; }
+
+.feature-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--naranja);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.feature p { font-size: 0.95rem; opacity: 0.8; margin-top: 8px; }
+
+/* ---------- Proceso (tarjetas crema de la Opción A) ---------- */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+.step {
+  background: var(--crema);
+  border-radius: var(--radio);
+  padding: 30px 24px;
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--azul); /* verde azulado del logo */
+  color: var(--blanco);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: 18px;
+}
+
+.step p { font-size: 0.92rem; color: var(--gris-texto); margin-top: 8px; }
+
+/* ---------- Banda CTA naranja (de la Opción C) ---------- */
+.cta-band {
+  background:
+    radial-gradient(ellipse 55% 80% at 90% 10%, rgba(19, 21, 24, 0.16), transparent 60%),
+    var(--naranja);
+  padding: 64px 0;
+}
+
+.cta-band-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.cta-band h2 {
+  color: var(--blanco);
+  max-width: 620px;
+}
+
+/* ---------- Galería ---------- */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.gallery .ph-tile {
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.gallery .ph-tile:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Testimonios (serif itálica de la Opción A) ---------- */
+.quote {
+  background: var(--crema);
+  border-radius: var(--radio);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.quote blockquote {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--tinta);
+  line-height: 1.5;
+}
+
+.quote figcaption { display: flex; flex-direction: column; margin-top: auto; }
+.quote figcaption strong { color: var(--azul); }
+.quote figcaption span { font-size: 0.85rem; color: var(--gris-texto); }
+
+/* ---------- Contacto (negro, datos en filas de la Opción C) ---------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.contact-text > p { margin-top: 18px; opacity: 0.85; }
+
+.contact-data {
+  margin-top: 32px;
+  display: grid;
+}
+
+.contact-data li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--linea-oscura);
+  font-size: 0.95rem;
+}
+
+.contact-data li:last-child { border-bottom: 1px solid var(--linea-oscura); }
+
+.contact-data strong { color: var(--blanco); }
+.contact-data a { color: var(--blanco); text-decoration: underline; text-underline-offset: 3px; }
+.contact-data a:hover { color: var(--naranja); }
+
+.contact-form {
+  background: var(--blanco);
+  border-radius: var(--radio);
+  padding: 36px 32px;
+  display: grid;
+  gap: 18px;
+  box-shadow: var(--sombra);
+}
+
+.field { display: grid; gap: 6px; }
+
+.field label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--azul);
+}
+
+.field input,
+.field select,
+.field textarea {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--tinta);
+  padding: 12px 14px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-sm);
+  background: var(--crema);
+  transition: border-color 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--naranja);
+  box-shadow: 0 0 0 3px rgba(235, 91, 52, 0.16);
+}
+
+.form-note {
+  text-align: center;
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  background: var(--negro);
+  border-top: 1px solid var(--linea-oscura);
+  color: rgba(255, 255, 255, 0.75);
+  padding: 64px 0 28px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--linea-oscura);
+}
+
+.footer-logo { height: 46px; width: auto; margin-bottom: 16px; }
+
+.footer-grid p { font-size: 0.9rem; max-width: 320px; }
+
+.footer-nav, .footer-social {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.92rem;
+}
+
+.footer-nav a:hover, .footer-social a:hover { color: var(--naranja); }
+
+.footer-bottom {
+  padding-top: 24px;
+  font-size: 0.82rem;
+  opacity: 0.65;
+}
+
+/* ---------- Animación de entrada (scroll reveal) ----------
+   Agregar la clase .reveal a cualquier elemento nuevo para heredarla. */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Entrada escalonada dentro de las retículas: cada pieza llega con un
+   pequeño retraso respecto a la anterior */
+.cards-3 .reveal:nth-child(2),
+.gallery .reveal:nth-child(3n+2),
+.steps .reveal:nth-child(2),
+.features .reveal:nth-child(2) { transition-delay: 0.12s; }
+
+.cards-3 .reveal:nth-child(3),
+.gallery .reveal:nth-child(3n),
+.steps .reveal:nth-child(3),
+.features .reveal:nth-child(3) { transition-delay: 0.24s; }
+
+.steps .reveal:nth-child(4),
+.features .reveal:nth-child(4) { transition-delay: 0.36s; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; transition-delay: 0s; }
+  .card, .card .ph-card, .gallery .ph-tile, .btn { transition: none; }
+  .card:hover, .gallery .ph-tile:hover, .btn:hover { transform: none; }
+  .card:hover .ph-card { transform: none; }
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 960px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .ph-hero { min-height: 320px; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .hero-stats li:nth-child(odd) { border-left: none; }
+  .hero-stats li:nth-child(n+3) { border-top: 1px solid var(--linea-oscura); }
+  .cards-3 { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  .gallery { grid-template-columns: repeat(2, 1fr); }
+  .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+@media (max-width: 720px) {
+  .section { padding: 72px 0; }
+  #servicios { padding-top: 150px; }
+
+  /* Menú móvil (claro, acorde al header) */
+  .nav {
+    display: none;
+    position: absolute;
+    top: 78px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--blanco);
+    border-bottom: 1px solid var(--linea);
+    padding: 20px 24px;
+    gap: 18px;
+  }
+  .nav.open { display: flex; }
+
+  .header-cta { display: none; }
+  .nav-toggle { display: flex; margin-left: auto; }
+
+  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+}
+
+@media (max-width: 480px) {
+  .hero { padding-top: 56px; }
+  .steps { grid-template-columns: 1fr; }
+  .gallery { grid-template-columns: 1fr; }
+  .features { grid-template-columns: 1fr; }
+  .feature { border-right: none; }
+  .feature:nth-child(n+3) { border-bottom: 1px solid var(--linea-oscura); }
+  .feature:last-child { border-bottom: none; }
+  .hero-stats { grid-template-columns: 1fr; }
+  .hero-stats li { border-left: none; }
+  .hero-stats li + li { border-top: 1px solid var(--linea-oscura); }
+  .cta-band-inner { justify-content: flex-start; }
+}
