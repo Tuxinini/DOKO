@@ -1,6 +1,10 @@
 # Material de referencia y branding original (se queda en disco, fuera del repo)
 _archivo/
 
+# Manual de marca y plantilla de cotización oficiales (documentación pesada,
+# se queda en disco como referencia pero no se versiona para mantener el repo liviano)
+diseño Doko/
+
 # Configuración local de herramientas
 .claude/
 
