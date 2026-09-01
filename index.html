@@ -171,13 +171,22 @@
           <p class="eyebrow">Proyectos recientes</p>
           <h2>El resultado habla por <em>nosotros</em></h2>
         </div>
+        <div class="gallery-filters" role="tablist" aria-label="Filtrar proyectos por zona">
+          <button class="filter-chip is-active" data-filter="todos" aria-pressed="true">Todos</button>
+          <button class="filter-chip" data-filter="sala" aria-pressed="false">Sala</button>
+          <button class="filter-chip" data-filter="cocina" aria-pressed="false">Cocina</button>
+          <button class="filter-chip" data-filter="bano" aria-pressed="false">Baño</button>
+          <button class="filter-chip" data-filter="habitacion" aria-pressed="false">Habitación</button>
+          <button class="filter-chip" data-filter="fachada" aria-pressed="false">Fachada</button>
+          <button class="filter-chip" data-filter="antes-despues" aria-pressed="false">Antes/Después</button>
+        </div>
         <div class="gallery">
-          <div class="ph ph-tile reveal">FOTO: sala remodelada</div>
-          <div class="ph ph-tile reveal">FOTO: cocina terminada</div>
-          <div class="ph ph-tile reveal">FOTO: baño principal</div>
-          <div class="ph ph-tile reveal">FOTO: fachada renovada</div>
-          <div class="ph ph-tile reveal">FOTO: habitación principal</div>
-          <div class="ph ph-tile reveal">FOTO: antes y después</div>
+          <div class="ph ph-tile reveal" data-zona="sala">FOTO: sala remodelada</div>
+          <div class="ph ph-tile reveal" data-zona="cocina">FOTO: cocina terminada</div>
+          <div class="ph ph-tile reveal" data-zona="bano">FOTO: baño principal</div>
+          <div class="ph ph-tile reveal" data-zona="fachada">FOTO: fachada renovada</div>
+          <div class="ph ph-tile reveal" data-zona="habitacion">FOTO: habitación principal</div>
+          <div class="ph ph-tile reveal" data-zona="antes-despues">FOTO: antes y después</div>
         </div>
       </div>
     </section>

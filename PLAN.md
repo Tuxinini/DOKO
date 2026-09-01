@@ -57,7 +57,7 @@ Copias listas para usar en `assets/`: `logo.png` (color, para el header claro), 
 - **HTML + CSS + JavaScript puros. Sin frameworks, sin build tools, sin npm.**
 - Se abre directamente con doble clic en `index.html` o con cualquier servidor estático.
 - Un solo archivo por tipo: `index.html`, `css/styles.css`, `js/main.js`.
-- JS mínimo: menú móvil, scroll-reveal con `IntersectionObserver`, año dinámico del footer.
+- JS mínimo: menú móvil, scroll-reveal con `IntersectionObserver`, año dinámico del footer, filtro de galería por zona.
 
 ## 4. Estructura de la página (ya construida)
 
@@ -69,7 +69,7 @@ Copias listas para usar en `assets/`: `logo.png` (color, para el header claro), 
 | 4 | `#por-que`          | Negro. Retícula 2×2 de diferenciales con bordes finos |
 | 5 | `#proceso`          | Blanco. 4 pasos en tarjetas crema con círculos verdes |
 | 6 | Banda CTA           | Naranja, con botón negro a WhatsApp |
-| 7 | `#proyectos`        | Crema. Galería 2×3 con placeholders de fotos |
+| 7 | `#proyectos`        | Crema. Chips de filtro por zona + galería (grid en escritorio, **carrusel deslizable en móvil**) |
 | 8 | `#testimonios`      | Blanco. 3 tarjetas con citas en serif itálica |
 | 9 | `#contacto`         | Negro. Datos en filas + formulario en tarjeta blanca |
 | 10| Footer              | Negro. Logo blanco, navegación, redes |
@@ -90,12 +90,23 @@ Cada foto pendiente es un `<div class="ph">FOTO: descripción</div>`. Para reemp
 
 ```html
 <!-- Antes -->
-<div class="ph ph-tile reveal">FOTO: sala remodelada</div>
+<div class="ph ph-tile reveal" data-zona="sala">FOTO: sala remodelada</div>
 <!-- Después -->
-<img class="ph ph-tile reveal" src="assets/proyectos/sala-1.jpg" alt="Sala remodelada por DOKO Studio">
+<img class="ph ph-tile reveal" data-zona="sala" src="assets/proyectos/sala-1.jpg" alt="Sala remodelada por DOKO Studio">
 ```
 
-La clase `.ph` ya trae el radio de esquina y `object-fit: cover`; solo cambiar la etiqueta y agregar `src` + `alt`. Guardar fotos en `assets/proyectos/` (crear la carpeta), idealmente JPG ≤ 300 KB, mínimo 1200px de ancho. Para el estilo oscuro de esta página lucen mejor fotos con buena iluminación cálida.
+La clase `.ph` ya trae el radio de esquina y `object-fit: cover`; solo cambiar la etiqueta y agregar `src` + `alt`. **Conservar siempre el atributo `data-zona`** — de él depende el filtro de la galería (§6b). Guardar fotos en `assets/proyectos/` (crear la carpeta), idealmente JPG ≤ 300 KB, mínimo 1200px de ancho. Para el estilo oscuro de esta página lucen mejor fotos con buena iluminación cálida.
+
+## 6b. Galería filtrable por zona / carrusel móvil
+
+La sección `#proyectos` tiene chips de filtro (`Todos`, `Sala`, `Cocina`, `Baño`, `Habitación`, `Fachada`, `Antes/Después`) que muestran u ocultan las tarjetas de `.gallery` según su atributo `data-zona`. La lógica vive en `js/main.js`, bloque "5. Filtro de galería".
+
+- **Escritorio/tablet (>720px):** `.gallery` es una cuadrícula normal; los chips ocultan/muestran tarjetas dentro de ella.
+- **Móvil (≤720px):** `.gallery` se convierte automáticamente en un **carrusel horizontal deslizable** (CSS `scroll-snap`, sin JS adicional); los chips filtran qué tarjetas entran en ese carrusel.
+
+**Para agregar una nueva zona** (p. ej. "Terraza"): agregar un botón `<button class="filter-chip" data-filter="terraza">Terraza</button>` en `.gallery-filters`, y usar `data-zona="terraza"` en las fotos correspondientes. No se necesita tocar el JS — el filtro es genérico y lee cualquier `data-filter`/`data-zona` que coincida.
+
+**Para que el carrusel luzca mejor**: hoy cada zona tiene solo 1 foto placeholder, así que al filtrar por una zona el carrusel muestra una sola tarjeta (sin nada que deslizar). El carrusel se aprovecha de verdad cuando cada zona tiene **2 o más fotos reales** — al insertar las fotos definitivas (Fase 2), conviene incluir varias tomas por zona si están disponibles.
 
 ## 7. Roadmap por fases
 

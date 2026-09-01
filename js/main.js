@@ -1,6 +1,6 @@
 /* ==========================================================================
    DÔKO Studio — JavaScript mínimo
-   1. Menú móvil  2. Scroll reveal  3. Año del footer  4. Formulario
+   1. Menú móvil  2. Scroll reveal  3. Año del footer  4. Formulario  5. Filtro de galería
    ========================================================================== */
 
 // 1. Menú móvil -------------------------------------------------------------
@@ -49,4 +49,28 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
   formNote.hidden = false;
   form.reset();
+});
+
+// 5. Filtro de galería por zona (carrusel deslizable en móvil) ----------------
+const filterChips = document.querySelectorAll(".filter-chip");
+const galleryTiles = document.querySelectorAll(".gallery .ph-tile");
+const gallery = document.querySelector(".gallery");
+
+filterChips.forEach((chip) => {
+  chip.addEventListener("click", () => {
+    filterChips.forEach((c) => {
+      c.classList.remove("is-active");
+      c.setAttribute("aria-pressed", "false");
+    });
+    chip.classList.add("is-active");
+    chip.setAttribute("aria-pressed", "true");
+
+    const zona = chip.dataset.filter;
+    galleryTiles.forEach((tile) => {
+      const coincide = zona === "todos" || tile.dataset.zona === zona;
+      tile.classList.toggle("is-hidden", !coincide);
+    });
+
+    gallery.scrollTo({ left: 0, behavior: "smooth" });
+  });
 });
