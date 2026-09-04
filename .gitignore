@@ -5,6 +5,10 @@ _archivo/
 # se queda en disco como referencia pero no se versiona para mantener el repo liviano)
 diseño Doko/
 
+# Fotos originales sin procesar de proyectos terminados (varios GB, zips de Drive).
+# Las versiones optimizadas para web ya viven en assets/proyectos/ y sí se versionan.
+Terminados/
+
 # Configuración local de herramientas
 .claude/
 

@@ -64,12 +64,12 @@ Copias listas para usar en `assets/`: `logo.png` (color, para el header claro), 
 | # | Sección (id)        | Contenido |
 |---|---------------------|-----------|
 | 1 | Header sticky claro | Logo a color, navegación, botón CTA "Cotizar ahora" |
-| 2 | `#inicio` (Hero)    | Negro con brillos, titular serif, 2 CTAs, foto, barra de estadísticas flotante |
-| 3 | `#servicios`        | Crema. 3 tarjetas: Obra gris, Casas usadas, Acabados y diseño |
+| 2 | `#inicio` (Hero)    | Negro con brillos, titular Poppins+Cardo, 2 CTAs, **foto real** (sala del proyecto Centriktown), barra de estadísticas flotante |
+| 3 | `#servicios`        | Crema. 3 tarjetas con **fotos reales**: Obra gris, Casas usadas, Acabados y diseño |
 | 4 | `#por-que`          | Negro. Retícula 2×2 de diferenciales con bordes finos |
 | 5 | `#proceso`          | Blanco. 4 pasos en tarjetas crema con círculos verdes |
 | 6 | Banda CTA           | Naranja, con botón negro a WhatsApp |
-| 7 | `#proyectos`        | Crema. Chips de filtro por zona + galería (grid en escritorio, **carrusel deslizable en móvil**) |
+| 7 | `#proyectos`        | Crema. **Cinta infinita** (marquee) con las fotos reales del proyecto, luego chips de filtro por zona + galería (grid en escritorio, **carrusel deslizable en móvil**). Cada tarjeta abre un **lightbox** con su propio carrusel animado (contador, zoom Ken Burns) |
 | 8 | `#testimonios`      | Blanco. 3 tarjetas con citas en serif itálica |
 | 9 | `#contacto`         | Negro. Datos en filas + formulario en tarjeta blanca |
 | 10| Footer              | Negro. Logo blanco, navegación, redes |
@@ -78,35 +78,70 @@ Copias listas para usar en `assets/`: `logo.png` (color, para el header claro), 
 
 - [x] **WhatsApp y correo reales** — ya aplicados (`+57 305 798 9724` / `camiloromeroe@gmail.com`), tomados del bloque "CONTACTO" de `diseño Doko/Copia de Plantilla Cotización DOKO STUDIO.pdf`. Si ese contacto debe ser distinto en la web pública (p. ej. una línea comercial dedicada en vez de un correo personal), avisar para actualizarlo — buscar `573057989724` y `camiloromeroe@gmail.com` en `index.html`.
 - [ ] **Cobertura real** (ciudad/zona) — sigue como placeholder genérico "Ciudad y alrededores".
-- [ ] **Fotos reales de proyectos** — los placeholders son `<div class="ph">`; reemplazar por `<img>` (ver §6).
+- [x] **Fotos reales de Sala, Cocina, Baño y Habitación** — ya aplicadas (ver §6b), tomadas de un proyecto real terminado (apartamento VIS "Centriktown"). Pendiente: **Fachada** y **Antes/Después** siguen en placeholder de texto — ese proyecto no incluía fotos de fachada ni tomas de "antes" (carpeta `Terminados/`, solo fotos "después"). Si llegan fotos de otro proyecto con fachada o con registro de antes/después, agregarlas siguiendo el mismo patrón.
+- [x] **Fotos reales en hero y tarjetas de servicio** — ya aplicadas, reutilizando las mismas 11 fotos del proyecto Centriktown (ver §6c). Cuando haya fotos de más proyectos, lo ideal es variar estas portadas para no repetir siempre el mismo apartamento.
 - [ ] **Testimonios reales** (nombre + texto). Los actuales son de muestra.
 - [ ] **Redes sociales** en el footer (los enlaces apuntan a `#`).
 - [ ] **Destino del formulario**: hoy no envía a ningún lado (solo muestra confirmación). Opciones: Formspree, correo, o redirigir a WhatsApp con el texto prellenado.
 - [ ] **Años de trayectoria exactos**: el manual de marca dice "más de cinco años"/"más de [X] años" — confirmar la cifra exacta si se quiere citar en la web.
 
-## 6. Cómo reemplazar los placeholders de fotos
+## 6. Cómo reemplazar/agregar fotos reales de proyectos
 
-Cada foto pendiente es un `<div class="ph">FOTO: descripción</div>`. Para reemplazar:
+Cada tarjeta de `.gallery` es un `<button>` con tres piezas: la **portada** (`<img>` visible en la cuadrícula), la **insignia** de conteo (`<span class="ph-badge">`), y el atributo **`data-fotos`** con todas las tomas de esa zona (usadas por el lightbox, ver §6b).
 
+**Zona con fotos reales** (patrón usado en Sala/Cocina/Baño/Habitación):
 ```html
-<!-- Antes -->
-<div class="ph ph-tile reveal" data-zona="sala">FOTO: sala remodelada</div>
-<!-- Después -->
-<img class="ph ph-tile reveal" data-zona="sala" src="assets/proyectos/sala-1.jpg" alt="Sala remodelada por DOKO Studio">
+<button type="button" class="ph-tile reveal" data-zona="cocina" data-titulo="Cocina — Nombre del proyecto" data-fotos="assets/proyectos/cocina-1.jpg|assets/proyectos/cocina-2.jpg|assets/proyectos/cocina-3.jpg">
+  <img src="assets/proyectos/cocina-1.jpg" alt="Cocina remodelada por DÔKO Studio" loading="lazy">
+  <span class="ph-badge">3 fotos</span>
+</button>
 ```
 
-La clase `.ph` ya trae el radio de esquina y `object-fit: cover`; solo cambiar la etiqueta y agregar `src` + `alt`. **Conservar siempre el atributo `data-zona`** — de él depende el filtro de la galería (§6b). Guardar fotos en `assets/proyectos/` (crear la carpeta), idealmente JPG ≤ 300 KB, mínimo 1200px de ancho. Para el estilo oscuro de esta página lucen mejor fotos con buena iluminación cálida.
+**Zona sin fotos todavía** (patrón usado en Fachada/Antes-Después — placeholder de texto):
+```html
+<button type="button" class="ph ph-tile reveal" data-zona="fachada" data-titulo="Fachada" data-fotos="Fachada renovada|Detalle de acabados exteriores">FOTO: fachada renovada<span class="ph-badge">2 fotos</span></button>
+```
+La diferencia clave: la variante con fotos reales **no lleva la clase `.ph`** (esa clase pinta el degradado + texto de placeholder) y en cambio contiene un `<img>` real.
 
-## 6b. Galería filtrable por zona / carrusel móvil
+**Para agregar/reemplazar fotos de un proyecto:**
+1. Optimizar las imágenes: máx. 1400px de ancho, JPG ≤ 300 KB, y **corregir la orientación EXIF** antes de subirlas (las fotos de celular vienen rotadas por metadata). Script usado en este proyecto — `PIL.ImageOps.exif_transpose()` antes de redimensionar y comprimir; ver ejemplo en el historial de commits o pedir que se regenere.
+2. Guardarlas en `assets/proyectos/` con el patrón `zona-N.jpg` (p. ej. `cocina-1.jpg`, `cocina-2.jpg`).
+3. Actualizar `data-fotos` de la tarjeta con las rutas separadas por `|` (la primera es la portada, y también debe coincidir con el `src` del `<img>` visible).
+4. Actualizar el número en `.ph-badge` para que coincida con la cantidad real de fotos.
+5. Actualizar `data-titulo` si quieres que el lightbox muestre el nombre del proyecto/cliente.
 
-La sección `#proyectos` tiene chips de filtro (`Todos`, `Sala`, `Cocina`, `Baño`, `Habitación`, `Fachada`, `Antes/Después`) que muestran u ocultan las tarjetas de `.gallery` según su atributo `data-zona`. La lógica vive en `js/main.js`, bloque "5. Filtro de galería".
+**Origen de las fotos actuales:** apartamento VIS "Centriktown" (proyecto real terminado), fotos originales sin procesar archivadas en `_archivo/fotos-centriktown/` (no versionado, se queda solo en este disco). Los zips de Google Drive originales (~8.8 GB, incluyen video) están en `Terminados/`, también fuera del repositorio (`.gitignore`) — no borrar ninguna de las dos carpetas sin respaldo.
 
+## 6b. Galería filtrable por zona, carrusel móvil y lightbox
+
+La sección `#proyectos` combina tres piezas, todas en `js/main.js`:
+
+**Filtro por zona (bloque "5. Filtro de galería"):** los chips (`Todos`, `Sala`, `Cocina`, `Baño`, `Habitación`, `Fachada`, `Antes/Después`) muestran u ocultan las tarjetas de `.gallery` según su atributo `data-zona`.
 - **Escritorio/tablet (>720px):** `.gallery` es una cuadrícula normal; los chips ocultan/muestran tarjetas dentro de ella.
-- **Móvil (≤720px):** `.gallery` se convierte automáticamente en un **carrusel horizontal deslizable** (CSS `scroll-snap`, sin JS adicional); los chips filtran qué tarjetas entran en ese carrusel.
+- **Móvil (≤720px):** `.gallery` se convierte automáticamente en un **carrusel horizontal deslizable** (CSS `scroll-snap`); los chips filtran qué tarjetas entran en ese carrusel.
 
-**Para agregar una nueva zona** (p. ej. "Terraza"): agregar un botón `<button class="filter-chip" data-filter="terraza">Terraza</button>` en `.gallery-filters`, y usar `data-zona="terraza"` en las fotos correspondientes. No se necesita tocar el JS — el filtro es genérico y lee cualquier `data-filter`/`data-zona` que coincida.
+**Para agregar una nueva zona** (p. ej. "Terraza"): agregar un botón `<button class="filter-chip" data-filter="terraza">Terraza</button>` en `.gallery-filters`, y usar `data-zona="terraza"` en la tarjeta correspondiente. No se necesita tocar el JS — el filtro es genérico.
 
-**Para que el carrusel luzca mejor**: hoy cada zona tiene solo 1 foto placeholder, así que al filtrar por una zona el carrusel muestra una sola tarjeta (sin nada que deslizar). El carrusel se aprovecha de verdad cuando cada zona tiene **2 o más fotos reales** — al insertar las fotos definitivas (Fase 2), conviene incluir varias tomas por zona si están disponibles.
+**Lightbox (bloque "6. Lightbox"):** al hacer clic en cualquier tarjeta se abre un carrusel modal animado con las fotos listadas en `data-fotos` de esa tarjeta:
+- Transición fade + slide con `cubic-bezier`, flechas, puntos, swipe táctil, navegación por teclado ←/→/Esc, foco accesible.
+- **Contador "N / total"** (`#lightboxContador`) bajo el título, actualizado en cada cambio de slide.
+- **Zoom Ken Burns**: la foto activa recibe la clase `.is-active` y se anima con un `scale(1 → 1.06)` muy lento (`transition: transform 6s`) mientras está visible — efecto editorial sutil, se desactiva con `prefers-reduced-motion`.
+- El JS detecta automáticamente si cada entrada de `data-fotos` es una **ruta de imagen** (termina en `.jpg/.png/.webp` → foto real) o **texto** (placeholder `.ph`) — por eso zonas con fotos reales y zonas sin fotos conviven sin conflicto usando el mismo mecanismo.
+
+## 6c. Cinta infinita (marquee) y fotos reales en hero/servicios
+
+Justo antes de los chips de filtro, `#proyectos` tiene una **cinta infinita** (`.marquee`) que hace scroll automático y continuo. Es puramente decorativa (`aria-hidden="true"`) — la experiencia accesible/interactiva sigue siendo la cuadrícula filtrable + lightbox de abajo.
+
+**Sincronizada con el filtro de zona:** la cinta no es estática — reacciona al chip seleccionado. El HTML solo trae el contenedor vacío (`<div class="marquee-track" id="marqueeTrack">`); todo el contenido lo arma `js/main.js` con la función `actualizarMarquee(zona)` (dentro del bloque "5. Filtro de galería"), a partir del array `fotosProyecto` (zona + ruta de cada foto):
+- `"todos"` → cinta con las 11 fotos.
+- Una zona específica (p. ej. `"cocina"`) → cinta con **solo** las fotos de esa zona, duplicadas para el loop sin costura, y con la duración de la animación recalculada (`fotos.length * 3.5s`, mínimo 10s) para que el ritmo se sienta parejo aunque haya pocas fotos.
+- Zona sin fotos reales (Fachada, Antes/Después) → la cinta completa se oculta (`.marquee.is-hidden`) en vez de mostrarse vacía.
+
+Se pausa al pasar el mouse (`:hover { animation-play-state: paused }`) y se congela con `prefers-reduced-motion`. Los bordes tienen un degradado de máscara (`mask-image`) para que las fotos aparezcan/desaparezcan suavemente en los extremos.
+
+**Para agregar fotos nuevas a la cinta**: agregar la entrada `{ zona: "...", src: "..." }` al array `fotosProyecto` en `js/main.js` — no hace falta tocar el HTML ni duplicar nada a mano, la función arma el loop automáticamente.
+
+Las mismas 11 fotos también se reutilizan como portada del **hero** (`sala-1.jpg`) y de las **3 tarjetas de servicios** (`habitacion-1.jpg`, `cocina-2.jpg`, `bano-1.jpg`), reemplazando los placeholders `.ph`. El patrón para reemplazarlas es el mismo que en §6: quitar la clase `.ph` del contenedor y usar un `<img>` real; el CSS ya trae las reglas `img.ph-hero` y `.card img.ph-card` para que la foto llene el marco con `object-fit: cover`.
 
 ## 7. Roadmap por fases
 

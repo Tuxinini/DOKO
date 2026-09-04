@@ -48,7 +48,7 @@
           </div>
         </div>
         <div class="hero-media">
-          <div class="ph ph-hero">FOTO: interior remodelado destacado</div>
+          <img class="ph-hero" src="assets/proyectos/sala-1.jpg" alt="Sala de un apartamento remodelado por DÔKO Studio, con vista panorámica de la ciudad">
         </div>
       </div>
       <!-- Barra de estadísticas flotante (estilo referencia ARCOVA) -->
@@ -71,19 +71,19 @@
         </div>
         <div class="cards-3">
           <article class="card reveal">
-            <div class="ph ph-card">FOTO: casa en obra gris</div>
+            <img class="ph-card" src="assets/proyectos/habitacion-1.jpg" alt="Habitación terminada en un proyecto de obra gris de DÔKO Studio">
             <h3>Casas en obra gris</h3>
             <p>Recibimos tu casa en estructura y la entregamos lista para habitar: pisos, cocina, baños, carpintería, pintura e iluminación con diseño coherente de principio a fin.</p>
             <a href="#contacto" class="link-more">Cotizar este servicio →</a>
           </article>
           <article class="card reveal">
-            <div class="ph ph-card">FOTO: remodelación de casa usada</div>
+            <img class="ph-card" src="assets/proyectos/cocina-2.jpg" alt="Cocina remodelada en un proyecto de casa usada de DÔKO Studio">
             <h3>Casas usadas</h3>
             <p>Renovamos casas con años de uso: redistribución de espacios, actualización de redes, cocinas y baños nuevos, y acabados que le devuelven todo su valor a la propiedad.</p>
             <a href="#contacto" class="link-more">Cotizar este servicio →</a>
           </article>
           <article class="card reveal">
-            <div class="ph ph-card">FOTO: detalle de acabados</div>
+            <img class="ph-card" src="assets/proyectos/bano-1.jpg" alt="Detalle de acabados en un baño remodelado por DÔKO Studio">
             <h3>Acabados y diseño</h3>
             <p>Asesoría en diseño interior y ejecución de acabados puntuales: pisos, enchapes, drywall, closets y muebles a medida, para intervenir solo lo que necesitas.</p>
             <a href="#contacto" class="link-more">Cotizar este servicio →</a>
@@ -180,13 +180,36 @@
           <button class="filter-chip" data-filter="fachada" aria-pressed="false">Fachada</button>
           <button class="filter-chip" data-filter="antes-despues" aria-pressed="false">Antes/Después</button>
         </div>
+        <!-- Cinta infinita: adelanto continuo de las fotos reales del proyecto.
+             Decorativa (aria-hidden); la experiencia accesible/interactiva vive
+             en la cuadrícula filtrable + lightbox de abajo. Contenido armado por
+             js/main.js (función actualizarMarquee) según el chip seleccionado. -->
+        <div class="marquee reveal" aria-hidden="true">
+          <div class="marquee-track" id="marqueeTrack"></div>
+        </div>
+
+        <!-- Cada tarjeta abre su propio carrusel (lightbox) con las fotos de esa zona.
+             data-fotos separa las tomas con "|": si una toma es una ruta de imagen se
+             muestra como foto real: si es texto, como placeholder — ver PLAN.md §6b. -->
         <div class="gallery">
-          <div class="ph ph-tile reveal" data-zona="sala">FOTO: sala remodelada</div>
-          <div class="ph ph-tile reveal" data-zona="cocina">FOTO: cocina terminada</div>
-          <div class="ph ph-tile reveal" data-zona="bano">FOTO: baño principal</div>
-          <div class="ph ph-tile reveal" data-zona="fachada">FOTO: fachada renovada</div>
-          <div class="ph ph-tile reveal" data-zona="habitacion">FOTO: habitación principal</div>
-          <div class="ph ph-tile reveal" data-zona="antes-despues">FOTO: antes y después</div>
+          <button type="button" class="ph-tile reveal" data-zona="sala" data-titulo="Sala — Apartamento Centriktown" data-fotos="assets/proyectos/sala-1.jpg|assets/proyectos/sala-2.jpg|assets/proyectos/sala-3.jpg">
+            <img src="assets/proyectos/sala-1.jpg" alt="Sala remodelada por DÔKO Studio" loading="lazy">
+            <span class="ph-badge">3 fotos</span>
+          </button>
+          <button type="button" class="ph-tile reveal" data-zona="cocina" data-titulo="Cocina — Apartamento Centriktown" data-fotos="assets/proyectos/cocina-1.jpg|assets/proyectos/cocina-2.jpg|assets/proyectos/cocina-3.jpg">
+            <img src="assets/proyectos/cocina-1.jpg" alt="Cocina remodelada por DÔKO Studio" loading="lazy">
+            <span class="ph-badge">3 fotos</span>
+          </button>
+          <button type="button" class="ph-tile reveal" data-zona="bano" data-titulo="Baño — Apartamento Centriktown" data-fotos="assets/proyectos/bano-1.jpg|assets/proyectos/bano-2.jpg">
+            <img src="assets/proyectos/bano-1.jpg" alt="Baño remodelado por DÔKO Studio" loading="lazy">
+            <span class="ph-badge">2 fotos</span>
+          </button>
+          <button type="button" class="ph ph-tile reveal" data-zona="fachada" data-titulo="Fachada" data-fotos="Fachada renovada|Detalle de acabados exteriores|Fachada de noche">FOTO: fachada renovada<span class="ph-badge">3 fotos</span></button>
+          <button type="button" class="ph-tile reveal" data-zona="habitacion" data-titulo="Habitación — Apartamento Centriktown" data-fotos="assets/proyectos/habitacion-1.jpg|assets/proyectos/habitacion-2.jpg|assets/proyectos/habitacion-3.jpg">
+            <img src="assets/proyectos/habitacion-1.jpg" alt="Habitación remodelada por DÔKO Studio" loading="lazy">
+            <span class="ph-badge">3 fotos</span>
+          </button>
+          <button type="button" class="ph ph-tile reveal" data-zona="antes-despues" data-titulo="Antes y después" data-fotos="Antes de la remodelación|Durante la obra|Después de la remodelación">FOTO: antes y después<span class="ph-badge">3 fotos</span></button>
         </div>
       </div>
     </section>
@@ -285,6 +308,22 @@
       <p>© <span id="year"></span> DÔKO Studio — by Mecha Labs. Todos los derechos reservados.</p>
     </div>
   </footer>
+
+  <!-- ============ LIGHTBOX: carrusel de fotos por zona ============ -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lightbox-backdrop" data-lightbox-close></div>
+    <div class="lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle">
+      <button type="button" class="lightbox-close" data-lightbox-close aria-label="Cerrar galería">&times;</button>
+      <h3 class="lightbox-title" id="lightboxTitle"></h3>
+      <p class="lightbox-contador" id="lightboxContador"></p>
+      <div class="lightbox-viewport">
+        <div class="lightbox-track"></div>
+        <button type="button" class="lightbox-arrow lightbox-prev" aria-label="Foto anterior">‹</button>
+        <button type="button" class="lightbox-arrow lightbox-next" aria-label="Foto siguiente">›</button>
+      </div>
+      <div class="lightbox-dots"></div>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>

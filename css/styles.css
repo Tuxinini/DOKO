@@ -320,6 +320,22 @@ h1 em, h2 em {
 .ph-card { min-height: 200px; border-radius: var(--radio-sm); }
 .ph-tile { min-height: 260px; }
 
+/* Fotos reales que reemplazan el placeholder .ph en hero y tarjetas de servicio */
+img.ph-hero {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radio);
+}
+
+.card img.ph-card {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* ---------- Secciones ---------- */
 .section { padding: 96px 0; }
 
@@ -462,6 +478,41 @@ h1 em, h2 em {
   max-width: 620px;
 }
 
+/* ---------- Cinta infinita de fotos del proyecto ---------- */
+.marquee {
+  overflow: hidden;
+  margin-bottom: 40px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+}
+
+/* Se oculta cuando la zona elegida no tiene fotos reales todavía (p. ej. Fachada) */
+.marquee.is-hidden { display: none; }
+
+.marquee-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  animation: marquee-scroll 38s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-track img {
+  width: 220px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: var(--radio-sm);
+  flex-shrink: 0;
+}
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 /* ---------- Filtro de proyectos por zona ---------- */
 .gallery-filters {
   display: flex;
@@ -500,7 +551,21 @@ h1 em, h2 em {
 }
 
 .gallery .ph-tile {
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  position: relative;
+  border-radius: var(--radio);
+  overflow: hidden;
   transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Tarjetas con foto real: la imagen llena la tarjeta por completo */
+.gallery .ph-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .gallery .ph-tile:hover {
@@ -509,6 +574,169 @@ h1 em, h2 em {
 }
 
 .gallery .ph-tile.is-hidden { display: none; }
+
+/* Insignia "N fotos": avisa que cada tarjeta abre un carrusel propio */
+.ph-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(235, 91, 52, 0.92);
+  color: var(--blanco);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+/* ---------- Lightbox: carrusel de fotos por zona ----------
+   Se abre al hacer clic en una tarjeta de .gallery. La lógica vive en
+   js/main.js, bloque "6. Lightbox". */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(25, 25, 25, 0.88);
+}
+
+.lightbox-panel {
+  position: relative;
+  z-index: 1;
+  width: min(640px, 100%);
+  background: var(--negro-suave);
+  border-radius: var(--radio);
+  padding: 28px 24px 24px;
+  box-shadow: var(--sombra);
+  transform: scale(0.94);
+  transition: transform 0.3s ease;
+}
+
+.lightbox.is-open .lightbox-panel {
+  transform: scale(1);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--blanco);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.lightbox-close:hover { background: var(--naranja); }
+
+.lightbox-title {
+  color: var(--blanco);
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+  padding-right: 40px;
+}
+
+.lightbox-contador {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.8rem;
+  margin-bottom: 14px;
+}
+
+.lightbox-viewport {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radio-sm);
+}
+
+.lightbox-track {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.lightbox-slide {
+  flex: 0 0 100%;
+  min-height: 340px;
+  border-radius: 0;
+  transform: scale(1);
+  transition: transform 6s ease-out;
+}
+
+/* Efecto Ken Burns: zoom lento y continuo mientras la foto está activa */
+.lightbox-slide.is-active {
+  transform: scale(1.06);
+}
+
+/* Diapositivas con foto real (a diferencia de los placeholders .ph de texto) */
+img.lightbox-slide {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lightbox-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--blanco);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  z-index: 2;
+}
+.lightbox-arrow:hover { background: var(--naranja); }
+.lightbox-prev { left: 10px; }
+.lightbox-next { right: 10px; }
+
+.lightbox-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.lightbox-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.lightbox-dot.is-active {
+  background: var(--naranja);
+  transform: scale(1.3);
+}
 
 /* ---------- Testimonios (serif itálica de la Opción A) ---------- */
 .quote {
@@ -685,6 +913,9 @@ h1 em, h2 em {
   .card, .card .ph-card, .gallery .ph-tile, .btn { transition: none; }
   .card:hover, .gallery .ph-tile:hover, .btn:hover { transform: none; }
   .card:hover .ph-card { transform: none; }
+  .lightbox, .lightbox-panel, .lightbox-track, .lightbox-arrow, .lightbox-dot, .lightbox-slide { transition: none; }
+  .lightbox-slide.is-active { transform: none; }
+  .marquee-track { animation: none; }
 }
 
 /* ==========================================================================
@@ -707,6 +938,9 @@ h1 em, h2 em {
   .section { padding: 72px 0; }
   #servicios { padding-top: 150px; }
 
+  /* Cinta infinita: fotos más pequeñas en móvil */
+  .marquee-track img { width: 160px; height: 110px; }
+
   /* Filtros y galería: en móvil la galería se convierte en carrusel
      deslizable; los chips filtran qué zona se muestra en él. */
   .gallery-filters {
@@ -728,6 +962,12 @@ h1 em, h2 em {
     scroll-snap-align: center;
     min-height: 320px;
   }
+
+  /* Lightbox: panel más ajustado y flechas fuera del área de la foto */
+  .lightbox-panel { padding: 22px 16px 18px; }
+  .lightbox-slide { min-height: 260px; }
+  .lightbox-prev { left: 4px; }
+  .lightbox-next { right: 4px; }
 
   /* Menú móvil (claro, acorde al header) */
   .nav {
