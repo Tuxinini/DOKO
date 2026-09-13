@@ -69,7 +69,7 @@ Copias listas para usar en `assets/`: `logo.png` (color, para el header claro), 
 | 4 | `#por-que`          | Negro. Retícula 2×2 de diferenciales con bordes finos |
 | 5 | `#proceso`          | Blanco. 4 pasos en tarjetas crema con círculos verdes |
 | 6 | Banda CTA           | Naranja, con botón negro a WhatsApp |
-| 7 | `#proyectos`        | Crema. **Cinta infinita** (marquee) con las fotos reales del proyecto, luego chips de filtro por zona + galería (grid en escritorio, **carrusel deslizable en móvil**). Cada tarjeta abre un **lightbox** con su propio carrusel animado (contador, zoom Ken Burns) |
+| 7 | `#proyectos`        | Crema. **Recorrido interactivo** — pines sobre un lienzo de fotos reales por espacio (toca uno → recorrido en video) — ver §6d, luego chips de filtro por zona y un **carrusel único** de fotos reales (swipe en móvil, flechas en escritorio) — ver §6b. Cada tarjeta abre un **lightbox** con su propio carrusel animado (contador, zoom Ken Burns), ya posicionado en la foto exacta que se tocó |
 | 8 | `#testimonios`      | Blanco. 3 tarjetas con citas en serif itálica |
 | 9 | `#contacto`         | Negro. Datos en filas + formulario en tarjeta blanca |
 | 10| Footer              | Negro. Logo blanco, navegación, redes |
@@ -78,8 +78,8 @@ Copias listas para usar en `assets/`: `logo.png` (color, para el header claro), 
 
 - [x] **WhatsApp y correo reales** — ya aplicados (`+57 305 798 9724` / `camiloromeroe@gmail.com`), tomados del bloque "CONTACTO" de `diseño Doko/Copia de Plantilla Cotización DOKO STUDIO.pdf`. Si ese contacto debe ser distinto en la web pública (p. ej. una línea comercial dedicada en vez de un correo personal), avisar para actualizarlo — buscar `573057989724` y `camiloromeroe@gmail.com` en `index.html`.
 - [ ] **Cobertura real** (ciudad/zona) — sigue como placeholder genérico "Ciudad y alrededores".
-- [x] **Fotos reales de Sala, Cocina, Baño y Habitación** — ya aplicadas (ver §6b), tomadas de un proyecto real terminado (apartamento VIS "Centriktown"). Pendiente: **Fachada** y **Antes/Después** siguen en placeholder de texto — ese proyecto no incluía fotos de fachada ni tomas de "antes" (carpeta `Terminados/`, solo fotos "después"). Si llegan fotos de otro proyecto con fachada o con registro de antes/después, agregarlas siguiendo el mismo patrón.
-- [x] **Fotos reales en hero y tarjetas de servicio** — ya aplicadas, reutilizando las mismas 11 fotos del proyecto Centriktown (ver §6c). Cuando haya fotos de más proyectos, lo ideal es variar estas portadas para no repetir siempre el mismo apartamento.
+- [x] **Fotos reales de Sala, Cocina, Baño y Habitación** — ya aplicadas (ver §6b), tomadas de un proyecto real terminado (apartamento VIS "Centriktown"). El chip **Fachada** se quitó del todo (ese proyecto no incluía fotos de fachada); **Antes/Después** se dejó como chip con una tarjeta especial adelantando el slider prometido en Fase 4 — ese proyecto tampoco tiene tomas de "antes" (carpeta `Terminados/`, solo fotos "después"). Si llega un proyecto con fachada o con registro de antes/después, agregarlo siguiendo el patrón de §6 (Fachada tendría que agregarse de nuevo como chip + entrada en `PROYECTOS`).
+- [x] **Fotos reales en hero y tarjetas de servicio** — ya aplicadas, reutilizando las mismas 11 fotos del proyecto Centriktown (ver §6b). Cuando haya fotos de más proyectos, lo ideal es variar estas portadas para no repetir siempre el mismo apartamento.
 - [ ] **Testimonios reales** (nombre + texto). Los actuales son de muestra.
 - [ ] **Redes sociales** en el footer (los enlaces apuntan a `#`).
 - [ ] **Destino del formulario**: hoy no envía a ningún lado (solo muestra confirmación). Opciones: Formspree, correo, o redirigir a WhatsApp con el texto prellenado.
@@ -87,61 +87,62 @@ Copias listas para usar en `assets/`: `logo.png` (color, para el header claro), 
 
 ## 6. Cómo reemplazar/agregar fotos reales de proyectos
 
-Cada tarjeta de `.gallery` es un `<button>` con tres piezas: la **portada** (`<img>` visible en la cuadrícula), la **insignia** de conteo (`<span class="ph-badge">`), y el atributo **`data-fotos`** con todas las tomas de esa zona (usadas por el lightbox, ver §6b).
+Una sola fuente de datos por zona, el objeto `PROYECTOS` en `js/main.js` (bloque "5. Filtro de proyectos por zona + carrusel único"), alimenta el carrusel de fotos **y** el lightbox — ya no hay `data-fotos` repartido en botones de HTML como en versiones anteriores del sitio.
 
 **Zona con fotos reales** (patrón usado en Sala/Cocina/Baño/Habitación):
-```html
-<button type="button" class="ph-tile reveal" data-zona="cocina" data-titulo="Cocina — Nombre del proyecto" data-fotos="assets/proyectos/cocina-1.jpg|assets/proyectos/cocina-2.jpg|assets/proyectos/cocina-3.jpg">
-  <img src="assets/proyectos/cocina-1.jpg" alt="Cocina remodelada por DÔKO Studio" loading="lazy">
-  <span class="ph-badge">3 fotos</span>
-</button>
+```js
+cocina: {
+  titulo: "Cocina — Nombre del proyecto",
+  fotos: ["assets/proyectos/cocina-1.jpg", "assets/proyectos/cocina-2.jpg", "assets/proyectos/cocina-3.jpg"],
+},
 ```
 
-**Zona sin fotos todavía** (patrón usado en Fachada/Antes-Después — placeholder de texto):
-```html
-<button type="button" class="ph ph-tile reveal" data-zona="fachada" data-titulo="Fachada" data-fotos="Fachada renovada|Detalle de acabados exteriores">FOTO: fachada renovada<span class="ph-badge">2 fotos</span></button>
+**Zona sin fotos todavía** (patrón usado en Antes/Después, el único chip que queda sin fotos reales — Fachada se quitó del todo por no tener contenido): `fotos: []`.
+```js
+"antes-despues": { titulo: "Antes y después", fotos: [] },
 ```
-La diferencia clave: la variante con fotos reales **no lleva la clase `.ph`** (esa clase pinta el degradado + texto de placeholder) y en cambio contiene un `<img>` real.
+`actualizarCarrusel()` detecta esta zona por nombre y muestra una tarjeta especial (`.antes-despues`, mitad textura oscura tipo "antes" + mitad crema tipo "después", con una insignia naranja "Muy pronto") en vez de una tarjeta de texto genérica — adelanta visualmente el slider de transformación de Fase 4 sin inventar fotos. Cualquier otra zona nueva sin fotos cae al placeholder genérico ("Fotos próximamente").
 
 **Para agregar/reemplazar fotos de un proyecto:**
 1. Optimizar las imágenes: máx. 1400px de ancho, JPG ≤ 300 KB, y **corregir la orientación EXIF** antes de subirlas (las fotos de celular vienen rotadas por metadata). Script usado en este proyecto — `PIL.ImageOps.exif_transpose()` antes de redimensionar y comprimir; ver ejemplo en el historial de commits o pedir que se regenere.
 2. Guardarlas en `assets/proyectos/` con el patrón `zona-N.jpg` (p. ej. `cocina-1.jpg`, `cocina-2.jpg`).
-3. Actualizar `data-fotos` de la tarjeta con las rutas separadas por `|` (la primera es la portada, y también debe coincidir con el `src` del `<img>` visible).
-4. Actualizar el número en `.ph-badge` para que coincida con la cantidad real de fotos.
-5. Actualizar `data-titulo` si quieres que el lightbox muestre el nombre del proyecto/cliente.
+3. Actualizar el array `fotos` de esa zona en `PROYECTOS` — el carrusel y el lightbox se reconstruyen solos, no hay nada más que tocar.
+4. Actualizar `titulo` si quieres que el lightbox muestre el nombre del proyecto/cliente.
 
 **Origen de las fotos actuales:** apartamento VIS "Centriktown" (proyecto real terminado), fotos originales sin procesar archivadas en `_archivo/fotos-centriktown/` (no versionado, se queda solo en este disco). Los zips de Google Drive originales (~8.8 GB, incluyen video) están en `Terminados/`, también fuera del repositorio (`.gitignore`) — no borrar ninguna de las dos carpetas sin respaldo.
 
-## 6b. Galería filtrable por zona, carrusel móvil y lightbox
+## 6b. Carrusel de proyectos, filtro por zona y lightbox
 
-La sección `#proyectos` combina tres piezas, todas en `js/main.js`:
+Antes había dos piezas separadas y redundantes — una cinta decorativa de scroll automático y una cuadrícula de botones que abría el lightbox — reemplazadas por **un solo carrusel** (`.carrusel-proyectos`) que hace ambas cosas: es la evidencia fotográfica visible por defecto y la puerta de entrada al lightbox.
 
-**Filtro por zona (bloque "5. Filtro de galería"):** los chips (`Todos`, `Sala`, `Cocina`, `Baño`, `Habitación`, `Fachada`, `Antes/Después`) muestran u ocultan las tarjetas de `.gallery` según su atributo `data-zona`.
-- **Escritorio/tablet (>720px):** `.gallery` es una cuadrícula normal; los chips ocultan/muestran tarjetas dentro de ella.
-- **Móvil (≤720px):** `.gallery` se convierte automáticamente en un **carrusel horizontal deslizable** (CSS `scroll-snap`); los chips filtran qué tarjetas entran en ese carrusel.
+**Filtro por zona (bloque "5"):** los chips (`Todos`, `Sala`, `Cocina`, `Baño`, `Habitación`, `Antes/Después`) reconstruyen el carrusel vía `actualizarCarrusel(zona)` a partir de `PROYECTOS` — una tarjeta por foto real (no por zona), así que "Todos" muestra las 11 fotos completas, no solo 5 portadas.
 
-**Para agregar una nueva zona** (p. ej. "Terraza"): agregar un botón `<button class="filter-chip" data-filter="terraza">Terraza</button>` en `.gallery-filters`, y usar `data-zona="terraza"` en la tarjeta correspondiente. No se necesita tocar el JS — el filtro es genérico.
+**Un solo carrusel para escritorio y móvil:** `.carrusel-track` es un `overflow-x: auto` con `scroll-snap-type: x mandatory` — el swipe táctil nativo lo mueve en móvil, y dos botones `.carrusel-arrow` (`scrollBy` de un ancho de tarjeta) lo mueven en escritorio (se ocultan en `≤720px`, donde el swipe ya basta). Ya no hace falta una implementación de grilla para desktop y otra de scroll-snap para móvil como antes.
 
-**Lightbox (bloque "6. Lightbox"):** al hacer clic en cualquier tarjeta se abre un carrusel modal animado con las fotos listadas en `data-fotos` de esa tarjeta:
+**Para agregar una nueva zona** (p. ej. "Terraza"): agregar el botón `<button class="filter-chip" data-filter="terraza">Terraza</button>` en `.gallery-filters`, y su entrada correspondiente en `PROYECTOS` (`terraza: { titulo: "...", fotos: [...] }`). No hace falta tocar el resto del JS.
+
+**Lightbox (bloque "6"):** al hacer clic en cualquier tarjeta del carrusel se abre `abrirLightbox(titulo, fotos, indiceInicial, elementoOrigen)` ya posicionado en **esa foto exacta** (no siempre la primera de la zona):
 - Transición fade + slide con `cubic-bezier`, flechas, puntos, swipe táctil, navegación por teclado ←/→/Esc, foco accesible.
 - **Contador "N / total"** (`#lightboxContador`) bajo el título, actualizado en cada cambio de slide.
 - **Zoom Ken Burns**: la foto activa recibe la clase `.is-active` y se anima con un `scale(1 → 1.06)` muy lento (`transition: transform 6s`) mientras está visible — efecto editorial sutil, se desactiva con `prefers-reduced-motion`.
-- El JS detecta automáticamente si cada entrada de `data-fotos` es una **ruta de imagen** (termina en `.jpg/.png/.webp` → foto real) o **texto** (placeholder `.ph`) — por eso zonas con fotos reales y zonas sin fotos conviven sin conflicto usando el mismo mecanismo.
 
-## 6c. Cinta infinita (marquee) y fotos reales en hero/servicios
+Las mismas fotos de `PROYECTOS` también se reutilizan como portada del **hero** (`sala-1.jpg`) y de las **3 tarjetas de servicios** (`habitacion-1.jpg`, `cocina-2.jpg`, `bano-1.jpg`). El patrón para reemplazarlas es el mismo que en §6: quitar la clase `.ph` del contenedor y usar un `<img>` real; el CSS ya trae las reglas `img.ph-hero` y `.card img.ph-card` para que la foto llene el marco con `object-fit: cover`.
 
-Justo antes de los chips de filtro, `#proyectos` tiene una **cinta infinita** (`.marquee`) que hace scroll automático y continuo. Es puramente decorativa (`aria-hidden="true"`) — la experiencia accesible/interactiva sigue siendo la cuadrícula filtrable + lightbox de abajo.
+## 6d. Recorrido interactivo (lienzo de fotos + pines) y video
 
-**Sincronizada con el filtro de zona:** la cinta no es estática — reacciona al chip seleccionado. El HTML solo trae el contenedor vacío (`<div class="marquee-track" id="marqueeTrack">`); todo el contenido lo arma `js/main.js` con la función `actualizarMarquee(zona)` (dentro del bloque "5. Filtro de galería"), a partir del array `fotosProyecto` (zona + ruta de cada foto):
-- `"todos"` → cinta con las 11 fotos.
-- Una zona específica (p. ej. `"cocina"`) → cinta con **solo** las fotos de esa zona, duplicadas para el loop sin costura, y con la duración de la animación recalculada (`fotos.length * 3.5s`, mínimo 10s) para que el ritmo se sienta parejo aunque haya pocas fotos.
-- Zona sin fotos reales (Fachada, Antes/Después) → la cinta completa se oculta (`.marquee.is-hidden`) en vez de mostrarse vacía.
+Antes de los chips de filtro, `#proyectos` tiene un **recorrido interactivo** (`.floorplan`): un lienzo de fotos reales (`.fp-canvas`, una `<img class="fp-canvas-photo">` por espacio superpuestas por opacidad, mismo mecanismo que el preloader) con un pin (`.fp-pin`) flotando por espacio (Habitación, Baño, Cocina, Sala). Antes esto era un plano SVG dibujado a mano (líneas + rectángulos por habitación) — se reemplazó porque, aunque técnicamente estaba bien resuelto, se sentía un diagrama de arquitecto ajeno al resto de la sección, que es puramente fotográfica.
 
-Se pausa al pasar el mouse (`:hover { animation-play-state: paused }`) y se congela con `prefers-reduced-motion`. Los bordes tienen un degradado de máscara (`mask-image`) para que las fotos aparezcan/desaparezcan suavemente en los extremos.
+Pasar el mouse o el foco por un pin **previsualiza** su foto en el lienzo (crossfade); el nombre del espacio siempre es visible, y un llamado explícito ("▶ Recorrido") solo aparece al interactuar — a propósito distinto del texto "N fotos" de la galería, porque este botón no abre fotos: abre el **recorrido en video** de ese espacio. Las fotos fijas siguen viviendo en la fila de chips + galería de abajo; son dos formas complementarias de explorar la misma zona, no la misma acción duplicada.
 
-**Para agregar fotos nuevas a la cinta**: agregar la entrada `{ zona: "...", src: "..." }` al array `fotosProyecto` en `js/main.js` — no hace falta tocar el HTML ni duplicar nada a mano, la función arma el loop automáticamente.
+**Un solo registro de datos por zona** (`js/main.js`, bloque "7. Recorrido interactivo"): el objeto `ZONAS` guarda, por cada espacio, su `centro` (punto en % del stage hacia el que "vuela" la cámara, y también la posición `left`/`top` de su pin en el HTML) y su `segundoVideo` (minuto exacto del recorrido). Antes eran dos objetos separados (`centrosZona` / `capitulosVideo`) con las mismas 4 claves repetidas — si vas a agregar un espacio nuevo, solo hay un lugar que tocar en JS.
 
-Las mismas 11 fotos también se reutilizan como portada del **hero** (`sala-1.jpg`) y de las **3 tarjetas de servicios** (`habitacion-1.jpg`, `cocina-2.jpg`, `bano-1.jpg`), reemplazando los placeholders `.ph`. El patrón para reemplazarlas es el mismo que en §6: quitar la clase `.ph` del contenedor y usar un `<img>` real; el CSS ya trae las reglas `img.ph-hero` y `.card img.ph-card` para que la foto llene el marco con `object-fit: cover`.
+Al tocar un pin: `mostrarFotoCanvas(zona)` deja su foto como la activa en el lienzo, la cámara hace zoom hacia ese punto (`.floorplan-stage.is-zoomed`, ver §"Recorrido interactivo" en `css/styles.css`), se dispara el chip de filtro de esa misma zona (así la galería y la cinta quedan sincronizadas para cuando el visitante cierre el video) y, cuando el zoom termina de verdad (evento `transitionend` sobre `transform`, no un timeout copiado a mano), se abre el modal `.recorrido` saltando al segundo exacto de `ZONAS[zona].segundoVideo`.
+
+**Para agregar un espacio nuevo:**
+1. Agregar su `<img class="fp-canvas-photo" data-zona="...">` dentro de `.fp-canvas` en `index.html` (portada de esa zona).
+2. Agregar su `<button class="fp-pin" data-zona="...">` posicionado en `%` (`left`/`top`) sobre el lienzo, con `.fp-pin-dot`, `.fp-pin-label` y `.fp-pin-cta`.
+3. Agregar su entrada a `ZONAS` en `js/main.js` (`centro` + `segundoVideo`) — usar las mismas coordenadas del pin.
+4. Si el espacio también debe filtrarse en la galería: agregar su `filter-chip` y sus tarjetas `data-zona` como en §6.
 
 ## 7. Roadmap por fases
 
@@ -159,13 +160,22 @@ Ajuste de paleta, tipografía (Poppins+Cardo) y motivos decorativos para que el 
 ### Fase 3 — Funcionalidad
 1. Conectar el formulario (Formspree o wa.me prellenado — lo más simple).
 2. Botón flotante de WhatsApp (opcional).
-3. SEO: revisar `<title>`, meta description, Open Graph con foto real.
+3. SEO: `<title>`, meta description y Open Graph/Twitter Card con foto real ya están en `index.html` — falta pasar `og:image`/`twitter:image` a URL absoluta una vez se confirme el dominio final de publicación.
 4. Publicar con GitHub Pages (Settings → Pages → rama `main`, carpeta raíz).
 
 ### Fase 4 — Pulido (solo si se pide)
-1. Lightbox en la galería de proyectos.
+1. ✅ Lightbox en la galería de proyectos.
 2. Slider de antes/después de remodelaciones (gran argumento de venta).
-3. Micro-animaciones adicionales, contador de proyectos.
+3. ✅ Contador animado de las cifras del hero. Micro-animaciones adicionales (`:active` en todos los controles, focus-trap en modales) ya aplicadas.
+
+### Fase 5 — Pase editorial (más impacto visual, misma dirección aprobada)
+El cliente pidió más "riqueza" visual sin cambiar la dirección de lujo oscuro ya decidida (§2) — esto la ejecuta con más fuerza, no la reemplaza:
+- Titulares mucho más grandes y con tracking negativo (ver §2 y DESIGN.md).
+- Grano sutil sobre todas las superficies oscuras (hero, secciones oscuras, footer, banda CTA, recorrido interactivo).
+- Parallax de scroll + inclinación por mouse en la foto del hero (respeta `prefers-reduced-motion` y dispositivos táctiles).
+- Retículas de servicios/testimonios/proceso con desfase vertical en escritorio, en vez de perfectamente parejas.
+- Banda CTA con foto real + velo naranja, en vez de naranja plano.
+- Fotos del hero, tarjetas y galería más grandes (más presencia, menos "encajonadas").
 
 ## 8. Reglas para quien continúe (humano o IA)
 
