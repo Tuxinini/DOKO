@@ -478,6 +478,129 @@ img.ph-hero {
   max-width: 620px;
 }
 
+/* ---------- Planta interactiva de acabados ---------- */
+/* Tarjeta oscura que "cabalga" sobre la sección crema, mismo recurso que la
+   barra de estadísticas del hero. Los .fp-hotspot son botones transparentes
+   superpuestos al SVG (posicionados en % sobre las mismas coordenadas del
+   viewBox) — al tocarlos disparan el chip de filtro y el lightbox ya
+   existentes, ver "7. Planta interactiva" en js/main.js. */
+.floorplan {
+  background: var(--negro);
+  border-radius: var(--radio);
+  padding: 34px 34px 28px;
+  margin-bottom: 40px;
+  box-shadow: var(--sombra);
+  /* Recorta el acercamiento de cámara para que no se salga de la tarjeta:
+     la planta hace zoom "dentro de una ventana", no sobre el resto de la página. */
+  overflow: hidden;
+}
+
+.floorplan-hint {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 20px;
+}
+
+/* .is-zoomed se agrega desde JS junto con un transform-origin en línea
+   (el centro del espacio elegido, en % del stage) — así toda la planta,
+   incluidos los hotspots, hace zoom hacia ese punto como una cámara.
+   Ver acercarCamara()/alejarCamara() en "7. Planta interactiva" en
+   js/main.js: se activa al elegir un espacio y se revierte al cerrar
+   el lightbox, para que la sensación de "volver" sea explícita. */
+.floorplan-stage {
+  position: relative;
+  max-width: 460px;
+  margin: 0 auto;
+  transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.floorplan-stage.is-zoomed {
+  transform: scale(2.4);
+}
+
+.floorplan-svg { width: 100%; height: auto; display: block; }
+
+.fp-wall { fill: none; stroke: rgba(255, 255, 255, 0.45); stroke-width: 3; }
+
+.fp-room {
+  fill: rgba(255, 255, 255, 0.04);
+  stroke: rgba(255, 255, 255, 0.24);
+  stroke-width: 2;
+  transition: fill 0.32s ease, stroke 0.32s ease;
+}
+
+.fp-room.is-active {
+  fill: rgba(235, 91, 52, 0.16);
+  stroke: var(--naranja);
+  stroke-width: 2.5;
+}
+
+.fp-hotspot {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Marco que aparece sobre el espacio al pasar el mouse — invita a tocarlo
+   antes del acercamiento real (que solo ocurre al hacer clic). */
+.fp-hotspot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: 1.5px solid transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  pointer-events: none;
+}
+
+.fp-hotspot:hover::before,
+.fp-hotspot:focus-visible::before {
+  background: rgba(235, 91, 52, 0.08);
+  border-color: rgba(235, 91, 52, 0.5);
+}
+
+.fp-hotspot-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--blanco);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.fp-hotspot:hover .fp-hotspot-label,
+.fp-hotspot:focus-visible .fp-hotspot-label {
+  transform: scale(1.06);
+}
+
+.fp-hotspot-count {
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.2s ease;
+}
+
+.fp-hotspot:hover .fp-hotspot-label,
+.fp-hotspot:focus-visible .fp-hotspot-label,
+.fp-hotspot:hover .fp-hotspot-count,
+.fp-hotspot:focus-visible .fp-hotspot-count { color: var(--naranja); }
+
+.fp-hotspot:focus-visible {
+  outline: 2px solid var(--naranja);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
 /* ---------- Cinta infinita de fotos del proyecto ---------- */
 .marquee {
   overflow: hidden;
@@ -738,6 +861,89 @@ img.lightbox-slide {
   transform: scale(1.3);
 }
 
+/* ---------- Recorrido: video real sincronizado con la planta ----------
+   Mismo patrón visual que .lightbox (overlay + panel oscuro), pero con un
+   <video> y capítulos en vez de un carrusel de fotos. La lógica vive en
+   js/main.js, bloque "7. Planta interactiva". */
+.recorrido {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.recorrido.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.recorrido-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(25, 25, 25, 0.88);
+}
+
+.recorrido-panel {
+  position: relative;
+  z-index: 1;
+  width: min(360px, 100%);
+  background: var(--negro-suave);
+  border-radius: var(--radio);
+  padding: 28px 24px 24px;
+  box-shadow: var(--sombra);
+  transform: scale(0.94);
+  transition: transform 0.3s ease;
+}
+
+.recorrido.is-open .recorrido-panel {
+  transform: scale(1);
+}
+
+.recorrido-video {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  border-radius: var(--radio-sm);
+  background: #000;
+  object-fit: cover;
+}
+
+.recorrido-capitulos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.recorrido-capitulo {
+  flex: 1 1 auto;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1.5px solid var(--linea-oscura);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.recorrido-capitulo:hover { border-color: var(--naranja); color: var(--blanco); }
+
+.recorrido-capitulo.is-active {
+  background: var(--naranja);
+  border-color: var(--naranja);
+  color: var(--blanco);
+}
+
 /* ---------- Testimonios (serif itálica de la Opción A) ---------- */
 .quote {
   background: var(--crema);
@@ -916,6 +1122,9 @@ img.lightbox-slide {
   .lightbox, .lightbox-panel, .lightbox-track, .lightbox-arrow, .lightbox-dot, .lightbox-slide { transition: none; }
   .lightbox-slide.is-active { transform: none; }
   .marquee-track { animation: none; }
+  .fp-room { transition: none; }
+  .floorplan-stage { transition: none; }
+  .recorrido, .recorrido-panel { transition: none; }
 }
 
 /* ==========================================================================
@@ -940,6 +1149,13 @@ img.lightbox-slide {
 
   /* Cinta infinita: fotos más pequeñas en móvil */
   .marquee-track img { width: 160px; height: 110px; }
+
+  /* Planta interactiva: etiquetas más compactas para que quepan en espacios angostos (Baño)
+     y acercamiento más moderado, para no recortar de más en pantallas angostas. */
+  .floorplan { padding: 24px 18px 22px; }
+  .fp-hotspot-label { font-size: 0.74rem; }
+  .fp-hotspot-count { font-size: 0.58rem; }
+  .floorplan-stage.is-zoomed { transform: scale(1.8); }
 
   /* Filtros y galería: en móvil la galería se convierte en carrusel
      deslizable; los chips filtran qué zona se muestra en él. */

@@ -11,6 +11,8 @@ python -m http.server 8000
 # → http://localhost:8000
 ```
 
+> **Al probar el recorrido en video** (`assets/recorrido.mp4`, sección Proyectos): `python -m http.server` no soporta HTTP Range requests, así que saltar a un capítulo que aún no se haya descargado por completo falla y el video vuelve a 0:00. No es un bug del sitio — GitHub Pages sí soporta Range requests, así que en producción funciona bien. Para probarlo en local con salto real, usar un servidor que sí soporte Range, p. ej. `npx serve`.
+
 ## Estructura
 
 ```

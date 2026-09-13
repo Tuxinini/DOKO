@@ -97,6 +97,15 @@ function actualizarMarquee(zona) {
   marqueeTrack.style.animationDuration = `${Math.max(fotos.length * 3.5, 10)}s`;
 }
 
+// Resalta en la planta el espacio que corresponde a la zona activa. Si la
+// zona no tiene un espacio en la planta (p. ej. "todos" o "fachada"), no
+// queda ninguno resaltado.
+function resaltarEspacioPlanta(zona) {
+  document.querySelectorAll(".fp-room").forEach((room) => {
+    room.classList.toggle("is-active", room.id === `fp-${zona}`);
+  });
+}
+
 filterChips.forEach((chip) => {
   chip.addEventListener("click", () => {
     filterChips.forEach((c) => {
@@ -113,6 +122,7 @@ filterChips.forEach((chip) => {
     });
 
     actualizarMarquee(zona);
+    resaltarEspacioPlanta(zona);
     gallery.scrollTo({ left: 0, behavior: "smooth" });
   });
 });
@@ -180,6 +190,7 @@ function cerrarLightbox() {
   lightbox.classList.remove("is-open");
   lightbox.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+  alejarCamara(); // si se abrió desde la planta, la cámara vuelve a la vista general
   if (lightboxUltimoFoco) lightboxUltimoFoco.focus();
 }
 
@@ -222,4 +233,137 @@ lightboxTrack.addEventListener("touchend", (e) => {
   if (Math.abs(delta) > 40) {
     irASlide(delta < 0 ? lightboxIndex + 1 : lightboxIndex - 1);
   }
+});
+
+// 7. Planta interactiva de acabados --------------------------------------------
+// Cada espacio de la planta es una entrada visual a los mismos datos de
+// siempre: al tocarlo, la cámara (toda la planta, hotspots incluidos) hace
+// zoom hacia ese espacio, se activa el chip de esa zona (filtra la galería de
+// fotos y actualiza la cinta, por si el visitante quiere fotos fijas después)
+// y, cuando el acercamiento termina, se abre el recorrido en video saltando
+// justo al momento en que se entra a ese espacio. Al cerrarlo, la cámara
+// vuelve a la vista general (ver alejarCamara() en cerrarRecorrido()).
+const floorplanStage = document.querySelector(".floorplan-stage");
+const fpHotspots = document.querySelectorAll(".fp-hotspot");
+const prefiereMovimientoReducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Centro de cada espacio en % del stage (mismas coordenadas que left/top/width/
+// height de cada .fp-hotspot en el HTML) — es el punto hacia el que "vuela" la
+// cámara. Si se agrega un espacio nuevo, agregar aquí su centro también.
+const centrosZona = {
+  habitacion: { x: 23.75, y: 25 },
+  bano: { x: 50, y: 25 },
+  cocina: { x: 76.25, y: 25 },
+  sala: { x: 50, y: 68.33 },
+};
+
+function acercarCamara(zona) {
+  const centro = centrosZona[zona];
+  if (!floorplanStage || !centro) return;
+  floorplanStage.style.transformOrigin = `${centro.x}% ${centro.y}%`;
+  floorplanStage.classList.add("is-zoomed");
+}
+
+function alejarCamara() {
+  if (floorplanStage) floorplanStage.classList.remove("is-zoomed");
+}
+
+fpHotspots.forEach((hotspot) => {
+  hotspot.addEventListener("click", () => {
+    const zona = hotspot.dataset.zona;
+    const chip = document.querySelector(`.filter-chip[data-filter="${zona}"]`);
+
+    acercarCamara(zona);
+    if (chip) chip.click(); // ya resalta la planta, filtra la galería y actualiza la cinta
+
+    // El recorrido se abre justo cuando el acercamiento termina (mismos 0.48s
+    // de .floorplan-stage.is-zoomed en styles.css); se omite la espera si el
+    // usuario prefiere menos movimiento.
+    window.setTimeout(
+      () => {
+        abrirRecorrido(zona);
+      },
+      prefiereMovimientoReducido ? 0 : 460
+    );
+  });
+});
+
+// Recorrido: video real del apartamento, con un capítulo (segundo exacto)
+// por espacio — grabado en una sola toma en primera persona, sin cámara 360,
+// así que no permite mirar alrededor: se salta a cada momento y se reproduce
+// hacia adelante. Duración total: 1:21.
+const recorrido = document.getElementById("recorrido");
+const recorridoVideo = document.getElementById("recorridoVideo");
+const recorridoCapitulos = document.querySelectorAll(".recorrido-capitulo");
+let recorridoUltimoFoco = null;
+
+const capitulosVideo = {
+  cocina: 9,
+  sala: 27,
+  bano: 48,
+  habitacion: 60,
+};
+
+// Salta el video al segundo indicado y lo reproduce. Si todavía no se cargaron
+// los metadatos (readyState 0 — puede pasar en el primer clic con conexiones
+// lentas), currentTime se ignora en silencio, así que se espera al evento
+// "loadedmetadata" antes de saltar. Con preload="metadata" + faststart (ver
+// index.html/PLAN.md), esto normalmente ya está listo de antemano.
+function saltarA(segundo) {
+  function saltar() {
+    recorridoVideo.currentTime = segundo;
+    recorridoVideo.play().catch(() => {});
+  }
+  if (recorridoVideo.readyState === 0) {
+    recorridoVideo.addEventListener("loadedmetadata", saltar, { once: true });
+  } else {
+    saltar();
+  }
+}
+
+function abrirRecorrido(zona) {
+  const segundo = capitulosVideo[zona];
+  if (segundo === undefined) return;
+
+  recorridoUltimoFoco = document.activeElement;
+
+  // El video se hace visible ANTES de pedirle que reproduzca: como no tiene
+  // pista de audio, Chrome lo pausa solo ("paused to save power") si play()
+  // se llama en el mismo instante en que el contenedor deja de ser
+  // visibility:hidden — antes de que el navegador pinte el cambio. La
+  // pequeña espera le da tiempo a registrar que el video ya es visible.
+  recorrido.classList.add("is-open");
+  recorrido.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  recorrido.querySelector(".lightbox-close").focus();
+
+  recorridoCapitulos.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.zona === zona));
+
+  window.setTimeout(() => saltarA(segundo), 20);
+}
+
+function cerrarRecorrido() {
+  recorridoVideo.pause();
+  recorrido.classList.remove("is-open");
+  recorrido.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  alejarCamara();
+  if (recorridoUltimoFoco) recorridoUltimoFoco.focus();
+}
+
+recorrido.querySelectorAll("[data-recorrido-close]").forEach((el) => {
+  el.addEventListener("click", cerrarRecorrido);
+});
+
+recorridoCapitulos.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const segundo = capitulosVideo[btn.dataset.zona];
+    if (segundo === undefined) return;
+    saltarA(segundo);
+    recorridoCapitulos.forEach((b) => b.classList.toggle("is-active", b === btn));
+  });
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && recorrido.classList.contains("is-open")) cerrarRecorrido();
 });

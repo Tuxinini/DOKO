@@ -171,6 +171,44 @@
           <p class="eyebrow">Proyectos recientes</p>
           <h2>El resultado habla por <em>nosotros</em></h2>
         </div>
+
+        <!-- Planta interactiva: entrada visual a los mismos datos de zona que
+             usan los chips y la galería de abajo (data-zona / data-fotos).
+             Al tocar un espacio, se resalta en la planta, se activa su chip
+             de filtro y se abre su lightbox — ver "7. Planta interactiva de
+             acabados" en js/main.js. -->
+        <div class="floorplan reveal" aria-label="Planta interactiva del apartamento">
+          <p class="floorplan-hint">Toca un espacio de la planta para ver sus acabados</p>
+          <div class="floorplan-stage">
+            <svg class="floorplan-svg" viewBox="0 0 400 300" aria-hidden="true" focusable="false">
+              <rect class="fp-wall" x="20" y="20" width="360" height="260"></rect>
+              <line class="fp-wall" x1="170" y1="20" x2="170" y2="130"></line>
+              <line class="fp-wall" x1="230" y1="20" x2="230" y2="130"></line>
+              <line class="fp-wall" x1="20" y1="130" x2="380" y2="130"></line>
+              <rect id="fp-habitacion" class="fp-room" x="20" y="20" width="150" height="110"></rect>
+              <rect id="fp-bano" class="fp-room" x="170" y="20" width="60" height="110"></rect>
+              <rect id="fp-cocina" class="fp-room" x="230" y="20" width="150" height="110"></rect>
+              <rect id="fp-sala" class="fp-room" x="20" y="130" width="360" height="150"></rect>
+            </svg>
+            <button type="button" class="fp-hotspot" data-zona="habitacion" style="left:5%; top:6.67%; width:37.5%; height:36.67%;">
+              <span class="fp-hotspot-label">Habitación</span>
+              <span class="fp-hotspot-count">3 fotos</span>
+            </button>
+            <button type="button" class="fp-hotspot" data-zona="bano" style="left:42.5%; top:6.67%; width:15%; height:36.67%;">
+              <span class="fp-hotspot-label">Baño</span>
+              <span class="fp-hotspot-count">2 fotos</span>
+            </button>
+            <button type="button" class="fp-hotspot" data-zona="cocina" style="left:57.5%; top:6.67%; width:37.5%; height:36.67%;">
+              <span class="fp-hotspot-label">Cocina</span>
+              <span class="fp-hotspot-count">3 fotos</span>
+            </button>
+            <button type="button" class="fp-hotspot" data-zona="sala" style="left:5%; top:43.33%; width:90%; height:50%;">
+              <span class="fp-hotspot-label">Sala</span>
+              <span class="fp-hotspot-count">3 fotos</span>
+            </button>
+          </div>
+        </div>
+
         <div class="gallery-filters" role="tablist" aria-label="Filtrar proyectos por zona">
           <button class="filter-chip is-active" data-filter="todos" aria-pressed="true">Todos</button>
           <button class="filter-chip" data-filter="sala" aria-pressed="false">Sala</button>
@@ -322,6 +360,26 @@
         <button type="button" class="lightbox-arrow lightbox-next" aria-label="Foto siguiente">›</button>
       </div>
       <div class="lightbox-dots"></div>
+    </div>
+  </div>
+
+  <!-- ============ RECORRIDO: video real, sincronizado con la planta ============
+       Al tocar un espacio en la planta interactiva de #proyectos, este modal
+       salta el video al momento exacto en que se entra a ese espacio (ver
+       capitulosVideo en js/main.js, bloque "7. Planta interactiva"). Los
+       botones de abajo permiten saltar de espacio sin cerrar el recorrido. -->
+  <div class="recorrido" id="recorrido" aria-hidden="true">
+    <div class="recorrido-backdrop" data-recorrido-close></div>
+    <div class="recorrido-panel" role="dialog" aria-modal="true" aria-labelledby="recorridoTitulo">
+      <button type="button" class="lightbox-close" data-recorrido-close aria-label="Cerrar recorrido">&times;</button>
+      <h3 class="lightbox-title" id="recorridoTitulo">Recorrido en video</h3>
+      <video id="recorridoVideo" class="recorrido-video" src="assets/recorrido.mp4" muted playsinline preload="metadata"></video>
+      <div class="recorrido-capitulos">
+        <button type="button" class="recorrido-capitulo" data-zona="sala">Sala</button>
+        <button type="button" class="recorrido-capitulo" data-zona="cocina">Cocina</button>
+        <button type="button" class="recorrido-capitulo" data-zona="bano">Baño</button>
+        <button type="button" class="recorrido-capitulo" data-zona="habitacion">Habitación</button>
+      </div>
     </div>
   </div>
 
