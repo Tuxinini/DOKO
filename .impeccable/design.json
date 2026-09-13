@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T00:00:00.000Z",
+  "title": "Design System: DÔKO Studio",
+  "extensions": {
+    "colorMeta": {
+      "obsidian-black": { "role": "neutral", "displayName": "Negro Obsidiana", "canonical": "#191919", "tonalRamp": ["#0d0d0d", "#262626", "#474747", "#666666", "#858585", "#a3a3a3", "#d6d6d6", "#f2f2f2"] },
+      "deep-night-blue": { "role": "neutral", "displayName": "Azul Noche Profundo", "canonical": "#1A3E46", "tonalRamp": ["#0c1e22", "#153138", "#275c68", "#378495", "#4da8bd", "#79becd", "#c3e2e9", "#ecf6f8"] },
+      "deep-petrol-blue": { "role": "secondary", "displayName": "Azul Profundo de Obra", "canonical": "#0E5B6D", "tonalRamp": ["#052026", "#093944", "#106a7f", "#1797b5", "#26bfe3", "#5ccfea", "#b7eaf6", "#e8f8fc"] },
+      "muted-turquoise": { "role": "secondary", "displayName": "Turquesa Atenuado", "canonical": "#3D93A6", "tonalRamp": ["#0c2226", "#153238", "#265c68", "#378495", "#4ca9bd", "#79bece", "#c3e2e9", "#ecf6f8"] },
+      "vivid-terracotta": { "role": "primary", "displayName": "Naranja Terracota Vivo", "canonical": "#EB5B34", "tonalRamp": ["#2e0d05", "#461407", "#82260d", "#ba3612", "#ef7858", "#f39d86", "#f8c3b5", "#fdece8"] },
+      "terracotta-deep": { "role": "primary", "displayName": "Terracota Profundo", "canonical": "#D44E2A", "tonalRamp": ["#2b0f06", "#421709", "#7c2a10", "#b23c15", "#e94b20", "#ef7858", "#f6b5a2", "#fce6de"] },
+      "earthy-brown": { "role": "tertiary", "displayName": "Café Tierra", "canonical": "#A95D39", "tonalRamp": ["#1e120a", "#391f13", "#6b3b24", "#995433", "#c16f48", "#d19376", "#eacfc2", "#f9f0ec"] },
+      "warm-cream": { "role": "neutral", "displayName": "Crema Cálida", "canonical": "#FFF5F0", "tonalRamp": ["#1a120e", "#2b1f1a", "#4a352b", "#8f6f5c", "#b39a89", "#d3c0b3", "#e8dcd3", "#fef9f6"] },
+      "warm-gray": { "role": "neutral", "displayName": "Gris Cálido", "canonical": "#6B625D", "tonalRamp": ["#141210", "#26221f", "#413a35", "#5c5450", "#6b625d", "#8c8480", "#c4beba", "#ece9e7"] },
+      "sand-line": { "role": "neutral", "displayName": "Línea Arena", "canonical": "#E4DED4", "tonalRamp": ["#2b2820", "#4c463a", "#736b5a", "#9a9081", "#c2b9a9", "#e4ded4", "#f0ece5", "#faf8f4"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "H1, exclusivo del hero." },
+      "headline": { "displayName": "Headline", "purpose": "H2, títulos de sección." },
+      "title": { "displayName": "Title", "purpose": "H3, subtítulos de tarjetas y bloques." },
+      "body": { "displayName": "Body", "purpose": "Párrafos generales." },
+      "label": { "displayName": "Label", "purpose": "Eyebrows y navegación, mayúsculas con tracking amplio." },
+      "accent": { "displayName": "Accent", "purpose": "Énfasis en Cardo itálica dentro de títulos, citas y tagline del footer." }
+    },
+    "shadows": [
+      { "name": "ambient-glow", "value": "0 22px 55px rgba(0, 0, 0, 0.22)", "purpose": "Atmósfera de lujo en paneles flotantes: barra de estadísticas, planta interactiva, lightbox, recorrido, formulario de contacto." },
+      { "name": "hover-lift-card", "value": "0 18px 45px rgba(0, 0, 0, 0.12)", "purpose": "Respuesta de hover en tarjetas de servicio/testimonios." },
+      { "name": "hover-lift-tile", "value": "0 16px 38px rgba(0, 0, 0, 0.18)", "purpose": "Respuesta de hover en tiles de la galería de proyectos." }
+    ],
+    "motion": [
+      { "name": "ease-lift", "value": "0.25s ease", "purpose": "Transición estándar de botones (fondo, color, transform, borde)." },
+      { "name": "ease-camera", "value": "0.48s cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Acercamiento de cámara de la planta interactiva." },
+      { "name": "ken-burns", "value": "6s ease-out", "purpose": "Zoom lento y continuo (scale 1 → 1.06) de la foto activa en el lightbox." },
+      { "name": "reveal", "value": "0.7s ease", "purpose": "Aparición al hacer scroll (opacity + translateY 26px → 0), con retrasos escalonados de 0.12s por hijo en retículas." }
+    ],
+    "breakpoints": [
+      { "name": "tablet", "value": "960px" },
+      { "name": "mobile", "value": "720px" },
+      { "name": "mobile-sm", "value": "480px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "CTA principal — banda naranja, texto blanco, elevación leve al hover.",
+      "html": "<button class=\"ds-btn-primary\">Cotizar ahora</button>",
+      "css": ".ds-btn-primary { display: inline-block; padding: 14px 30px; border-radius: 999px; font-weight: 700; font-size: 0.95rem; border: 2px solid transparent; background: #EB5B34; color: #FFFFFF; cursor: pointer; transition: background 0.25s ease, transform 0.25s ease; } .ds-btn-primary:hover { background: #D44E2A; transform: translateY(-2px); } .ds-btn-primary:focus-visible { outline: 2px solid #EB5B34; outline-offset: 3px; }"
+    },
+    {
+      "name": "Light Button",
+      "kind": "button",
+      "refersTo": "button-light",
+      "description": "Botón secundario para usar sobre fondos negros — borde translúcido, se invierte al hover.",
+      "html": "<button class=\"ds-btn-light\">Ver proyectos</button>",
+      "css": ".ds-btn-light { display: inline-block; padding: 14px 30px; border-radius: 999px; font-weight: 700; font-size: 0.95rem; border: 2px solid rgba(255,255,255,0.55); background: transparent; color: #FFFFFF; cursor: pointer; transition: background 0.25s ease, color 0.25s ease; } .ds-btn-light:hover { background: #FFFFFF; color: #191919; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "filter-chip",
+      "description": "Chip de filtro por zona en la galería de proyectos; estado activo se rellena en naranja.",
+      "html": "<button class=\"ds-chip is-active\">Cocina</button>",
+      "css": ".ds-chip { font-size: 0.85rem; font-weight: 600; padding: 8px 18px; border-radius: 999px; border: 1.5px solid #E4DED4; background: #FFFFFF; color: #6B625D; cursor: pointer; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease; } .ds-chip:hover { border-color: #EB5B34; color: #191919; } .ds-chip.is-active { background: #EB5B34; border-color: #EB5B34; color: #FFFFFF; }"
+    },
+    {
+      "name": "Service Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Tarjeta clara de servicios/testimonios con foto y elevación al hover.",
+      "html": "<div class=\"ds-card\"><h3>Obra gris</h3><p>Terminación completa desde la entrega del constructor.</p><a class=\"ds-link-more\" href=\"#\">Ver más →</a></div>",
+      "css": ".ds-card { background: #FFFFFF; border: 1px solid #E4DED4; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 14px; transition: transform 0.3s ease, box-shadow 0.3s ease; } .ds-card:hover { transform: translateY(-6px); box-shadow: 0 18px 45px rgba(0,0,0,0.12); } .ds-card p { color: #6B625D; font-size: 0.95rem; } .ds-link-more { margin-top: auto; font-weight: 700; font-size: 0.9rem; color: #EB5B34; }"
+    },
+    {
+      "name": "Dark Panel",
+      "kind": "card",
+      "refersTo": "panel-dark",
+      "description": "Panel oscuro flotante (lightbox, recorrido, planta interactiva) con ambient glow.",
+      "html": "<div class=\"ds-panel-dark\"><p>Contenido del panel</p></div>",
+      "css": ".ds-panel-dark { background: #1A3E46; border-radius: 22px; padding: 28px 24px 24px; box-shadow: 0 22px 55px rgba(0,0,0,0.22); color: rgba(255,255,255,0.82); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Campo de formulario dentro de la tarjeta blanca de contacto — fondo crema como capa de contraste.",
+      "html": "<div class=\"ds-field\"><label>Nombre</label><input type=\"text\" placeholder=\"Tu nombre\" /></div>",
+      "css": ".ds-field { display: grid; gap: 6px; } .ds-field label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #0E5B6D; } .ds-field input { font-size: 0.95rem; color: #191919; padding: 12px 14px; border: 1px solid #E4DED4; border-radius: 12px; background: #FFF5F0; transition: border-color 0.2s ease; } .ds-field input:focus { outline: none; border-color: #EB5B34; box-shadow: 0 0 0 3px rgba(235,91,52,0.16); }"
+    },
+    {
+      "name": "Sticky Nav",
+      "kind": "nav",
+      "refersTo": "header",
+      "description": "Header claro sticky con logo a color y fondo translúcido con blur.",
+      "html": "<header class=\"ds-header\"><nav class=\"ds-nav\"><a href=\"#servicios\">Servicios</a><a href=\"#proyectos\">Proyectos</a></nav></header>",
+      "css": ".ds-header { position: sticky; top: 0; background: rgba(255,255,255,0.94); backdrop-filter: blur(10px); border-bottom: 1px solid #E4DED4; padding: 0 24px; } .ds-nav { display: flex; gap: 26px; height: 78px; align-items: center; } .ds-nav a { font-weight: 600; font-size: 0.92rem; color: #191919; transition: color 0.2s ease; } .ds-nav a:hover { color: #EB5B34; }"
+    },
+    {
+      "name": "Photo Canvas Pin",
+      "kind": "custom",
+      "refersTo": "floorplan",
+      "description": "Componente de firma — pin flotando sobre un lienzo de fotos reales (crossfade por espacio); en reposo solo muestra el nombre, al interactuar revela el llamado a ver el recorrido en video.",
+      "html": "<div class=\"ds-fp-canvas\"><img class=\"ds-fp-canvas-photo ds-is-active\" src=\"assets/proyectos/cocina-1.jpg\" alt=\"\"><div class=\"ds-fp-scrim\"></div><button class=\"ds-fp-pin\" style=\"left:50%;top:40%;\"><span class=\"ds-fp-dot\"></span><span class=\"ds-fp-label\">Cocina</span><span class=\"ds-fp-cta\">▶ Recorrido</span></button></div>",
+      "css": ".ds-fp-canvas { position: relative; width: 320px; aspect-ratio: 4/3; border-radius: 12px; overflow: hidden; } .ds-fp-canvas-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; } .ds-fp-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(25,25,25,0.15), rgba(25,25,25,0.55)); } .ds-fp-pin { position: absolute; transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; background: transparent; border: none; cursor: pointer; text-align: center; } .ds-fp-dot { width: 14px; height: 14px; border-radius: 50%; background: #EB5B34; border: 2px solid rgba(255,255,255,0.85); } .ds-fp-label { font-weight: 600; font-size: 0.85rem; color: #FFFFFF; text-shadow: 0 1px 4px rgba(0,0,0,0.7); } .ds-fp-cta { font-size: 0.72rem; color: rgba(255,255,255,0.85); text-shadow: 0 1px 4px rgba(0,0,0,0.7); opacity: 0; transition: opacity 0.2s ease; } .ds-fp-pin:hover .ds-fp-cta, .ds-fp-pin:focus-visible .ds-fp-cta { opacity: 1; } .ds-fp-pin:hover .ds-fp-label { color: #EB5B34; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El Estudio de Precisión",
+    "overview": "DÔKO vende exactitud y oficio, no solo decoración: la mayoría de sus proyectos son apartamentos entregados en obra gris que necesitan un plan de precisión para llegar a terminados. El sistema visual traduce eso en una precisión editorial en la estructura — retículas de bordes finos, eyebrows tipográficos, cifras destacadas, tipografía sans-serif firme — combinada con calidez humana en los acentos: el naranja vivo, las itálicas de énfasis y las fotos reales de proyectos terminados evitan que el negro protagonista se sienta corporativo o frío. El negro (\"Negro Obsidiana\") domina las secciones de mayor peso narrativo (hero, diferenciales, contacto, footer), alternando con paneles claros en crema y blanco que respiran entre bloques oscuros. Un único acento vivo —el naranja terracota— hace todo el trabajo de llamado a la acción y énfasis; el resto de la paleta permanece contenida a propósito.",
+    "keyCharacteristics": [
+      "Negro protagonista alternado con paneles claros — nunca gris intermedio como fondo de sección.",
+      "Un solo acento vivo por pantalla (naranja); el azul petróleo queda para detalles secundarios (eyebrows, cifras, números de proceso).",
+      "Motivo circular fino heredado literalmente de las portadas del manual de marca.",
+      "Itálica de énfasis siempre en Cardo, nunca fingida sobre Poppins."
+    ],
+    "rules": [
+      { "name": "The One Warm Accent Rule", "body": "El naranja terracota es el único color \"vivo\" del sistema. El azul de obra y el café son acentos de apoyo, nunca compiten con el naranja por atención en la misma pantalla.", "section": "colors" },
+      { "name": "The Cardo-Only Italic Rule", "body": "Cualquier texto en cursiva usa var(--font-accent) (Cardo). Nunca font-style: italic sobre Poppins.", "section": "typography" },
+      { "name": "The Ambient-Not-Structural Rule", "body": "La sombra grande no comunica jerarquía estructural — comunica atmósfera de lujo. Se reserva para paneles ya identificados como flotantes.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar el naranja terracota como único acento vivo por pantalla — reservarlo para CTAs, estados activos e itálicas de énfasis.",
+      "Do usar siempre var(--font-accent) (Cardo) para cualquier itálica; nunca fingirla sobre Poppins.",
+      "Do usar la forma píldora (border-radius: 999px) para todo elemento clickeable — botones, chips, insignias.",
+      "Do reservar el turquesa atenuado (--azul-claro) exclusivamente para texto que deba leerse sobre fondo oscuro y siga siendo la palabra destacada.",
+      "Do añadir la clase .reveal a cualquier sección nueva para heredar la animación de entrada al scroll.",
+      "Do incluir una alternativa para prefers-reduced-motion en cualquier animación nueva."
+    ],
+    "donts": [
+      "Don't replicar el <span class=\"destacado\"> azul del hero en ningún otro título.",
+      "Don't introducir sombras nuevas fuera de --sombra y los dos pares de hover-shadow ya existentes.",
+      "Don't usar valores hex sueltos — siempre las variables CSS de :root.",
+      "Don't mezclar el lenguaje de forma: un elemento clickeable no debe llevar el radio suave de tarjeta en vez de píldora, ni viceversa."
+    ]
+  }
+}

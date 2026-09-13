@@ -5,13 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DÔKO Studio — Remodelación de casas en obra gris y casas usadas</title>
   <meta name="description" content="Transformamos casas en obra gris y casas usadas en hogares elegantes y funcionales. Remodelación integral con acabados de calidad, presupuesto claro y entrega puntual.">
+  <meta name="theme-color" content="#191919">
+  <!-- Open Graph / Twitter Card: rutas relativas por ahora — confirmar el
+       dominio final de publicación (GitHub Pages o dominio propio) y pasarlas
+       a absolutas antes de compartir el link en redes (Fase 3 del PLAN.md). -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="DÔKO Studio">
+  <meta property="og:title" content="DÔKO Studio — Remodelación de casas en obra gris y casas usadas">
+  <meta property="og:description" content="Transformamos casas en obra gris y casas usadas en hogares elegantes y funcionales. Remodelación integral con acabados de calidad, presupuesto claro y entrega puntual.">
+  <meta property="og:image" content="assets/proyectos/sala-1.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DÔKO Studio — Remodelación de casas en obra gris y casas usadas">
+  <meta name="twitter:description" content="Transformamos casas en obra gris y casas usadas en hogares elegantes y funcionales. Remodelación integral con acabados de calidad, presupuesto claro y entrega puntual.">
+  <meta name="twitter:image" content="assets/proyectos/sala-1.jpg">
   <link rel="icon" type="image/png" href="assets/icono.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- ?v= al final: sube este número cada vez que cambies styles.css/main.js.
+       Sin esto el navegador puede seguir sirviendo la versión en caché aunque
+       el archivo en disco ya haya cambiado — pásale esta misma versión a
+       main.js más abajo cuando la subas. -->
+  <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body>
+
+  <!-- ============ PRELOADER: acabados reales mientras carga la página ============
+       Cross-fade entre 4 fotos reales (una por espacio) mientras el sitio
+       termina de cargar, en vez de un spinner genérico — ver "0. Preloader"
+       en js/main.js. Sin JavaScript queda oculto (noscript) para no tapar
+       el contenido. -->
+  <div class="preloader" id="preloader" role="status" aria-live="polite">
+    <div class="preloader-inner">
+      <img src="assets/logo-blanco.png" alt="" class="preloader-logo">
+      <div class="preloader-frame">
+        <img src="assets/proyectos/sala-1.jpg" alt="" class="preloader-slide is-active" data-nombre="Sala">
+        <img src="assets/proyectos/cocina-1.jpg" alt="" class="preloader-slide" data-nombre="Cocina">
+        <img src="assets/proyectos/bano-1.jpg" alt="" class="preloader-slide" data-nombre="Baño">
+        <img src="assets/proyectos/habitacion-1.jpg" alt="" class="preloader-slide" data-nombre="Habitación">
+      </div>
+      <p class="preloader-caption">Acabados en <em id="preloaderNombre">Sala</em></p>
+      <div class="preloader-bar"><span class="preloader-bar-fill" id="preloaderBarFill"></span></div>
+      <span class="sr-only">Cargando DÔKO Studio…</span>
+    </div>
+  </div>
+  <noscript><style>.preloader { display: none; }</style></noscript>
 
   <!-- ============ HEADER (oscuro) ============ -->
   <header class="header" id="header">
@@ -156,8 +194,10 @@
       </div>
     </section>
 
-    <!-- ============ BANDA CTA (naranja) ============ -->
+    <!-- ============ BANDA CTA (foto real + velo naranja) ============ -->
     <section class="cta-band">
+      <img class="cta-band-photo" src="assets/proyectos/habitacion-2.jpg" alt="" aria-hidden="true">
+      <div class="cta-band-overlay" aria-hidden="true"></div>
       <div class="container cta-band-inner reveal">
         <h2>¿Tienes una casa en obra gris o para renovar?</h2>
         <a href="https://wa.me/573057989724?text=Hola%2C%20quiero%20cotizar%20una%20remodelaci%C3%B3n" class="btn btn-black" target="_blank" rel="noopener">Agenda tu visita gratis</a>
@@ -172,39 +212,44 @@
           <h2>El resultado habla por <em>nosotros</em></h2>
         </div>
 
-        <!-- Planta interactiva: entrada visual a los mismos datos de zona que
-             usan los chips y la galería de abajo (data-zona / data-fotos).
-             Al tocar un espacio, se resalta en la planta, se activa su chip
-             de filtro y se abre su lightbox — ver "7. Planta interactiva de
-             acabados" en js/main.js. -->
-        <div class="floorplan reveal" aria-label="Planta interactiva del apartamento">
-          <p class="floorplan-hint">Toca un espacio de la planta para ver sus acabados</p>
+        <!-- Recorrido interactivo: entrada visual a los mismos datos de zona
+             que usan los chips y la galería de abajo (data-zona / data-fotos).
+             Reemplaza el plano dibujado por un lienzo de fotos reales: los
+             pines viven sobre una foto (que cambia al pasar el mouse por cada
+             pin, previsualizando el espacio) en vez de sobre un diagrama de
+             líneas — ver "7. Planta interactiva de acabados" en js/main.js.
+             Al tocar un pin: se resalta, se activa su chip de filtro (fotos +
+             cinta) y se abre el recorrido en video de ese espacio. -->
+        <p class="floorplan-intro reveal">Así se distribuye este apartamento — toca un espacio y mira su recorrido en video real.</p>
+        <div class="floorplan reveal" role="group" aria-label="Recorrido interactivo del apartamento">
+          <p class="floorplan-hint">Toca un espacio para ver su recorrido</p>
           <div class="floorplan-stage">
-            <svg class="floorplan-svg" viewBox="0 0 400 300" aria-hidden="true" focusable="false">
-              <rect class="fp-wall" x="20" y="20" width="360" height="260"></rect>
-              <line class="fp-wall" x1="170" y1="20" x2="170" y2="130"></line>
-              <line class="fp-wall" x1="230" y1="20" x2="230" y2="130"></line>
-              <line class="fp-wall" x1="20" y1="130" x2="380" y2="130"></line>
-              <rect id="fp-habitacion" class="fp-room" x="20" y="20" width="150" height="110"></rect>
-              <rect id="fp-bano" class="fp-room" x="170" y="20" width="60" height="110"></rect>
-              <rect id="fp-cocina" class="fp-room" x="230" y="20" width="150" height="110"></rect>
-              <rect id="fp-sala" class="fp-room" x="20" y="130" width="360" height="150"></rect>
-            </svg>
-            <button type="button" class="fp-hotspot" data-zona="habitacion" style="left:5%; top:6.67%; width:37.5%; height:36.67%;">
-              <span class="fp-hotspot-label">Habitación</span>
-              <span class="fp-hotspot-count">3 fotos</span>
+            <div class="fp-canvas">
+              <img class="fp-canvas-photo is-active" data-zona="sala" src="assets/proyectos/sala-1.jpg" alt="Sala del apartamento Centriktown remodelado por DÔKO Studio" loading="lazy">
+              <img class="fp-canvas-photo" data-zona="habitacion" src="assets/proyectos/habitacion-1.jpg" alt="" loading="lazy">
+              <img class="fp-canvas-photo" data-zona="bano" src="assets/proyectos/bano-1.jpg" alt="" loading="lazy">
+              <img class="fp-canvas-photo" data-zona="cocina" src="assets/proyectos/cocina-1.jpg" alt="" loading="lazy">
+              <div class="fp-canvas-scrim" aria-hidden="true"></div>
+            </div>
+            <button type="button" class="fp-pin" data-zona="habitacion" style="left:23.75%; top:25%;">
+              <span class="fp-pin-dot" aria-hidden="true"></span>
+              <span class="fp-pin-label">Habitación</span>
+              <span class="fp-pin-cta">▶ Recorrido</span>
             </button>
-            <button type="button" class="fp-hotspot" data-zona="bano" style="left:42.5%; top:6.67%; width:15%; height:36.67%;">
-              <span class="fp-hotspot-label">Baño</span>
-              <span class="fp-hotspot-count">2 fotos</span>
+            <button type="button" class="fp-pin" data-zona="bano" style="left:50%; top:25%;">
+              <span class="fp-pin-dot" aria-hidden="true"></span>
+              <span class="fp-pin-label">Baño</span>
+              <span class="fp-pin-cta">▶ Recorrido</span>
             </button>
-            <button type="button" class="fp-hotspot" data-zona="cocina" style="left:57.5%; top:6.67%; width:37.5%; height:36.67%;">
-              <span class="fp-hotspot-label">Cocina</span>
-              <span class="fp-hotspot-count">3 fotos</span>
+            <button type="button" class="fp-pin" data-zona="cocina" style="left:76.25%; top:25%;">
+              <span class="fp-pin-dot" aria-hidden="true"></span>
+              <span class="fp-pin-label">Cocina</span>
+              <span class="fp-pin-cta">▶ Recorrido</span>
             </button>
-            <button type="button" class="fp-hotspot" data-zona="sala" style="left:5%; top:43.33%; width:90%; height:50%;">
-              <span class="fp-hotspot-label">Sala</span>
-              <span class="fp-hotspot-count">3 fotos</span>
+            <button type="button" class="fp-pin" data-zona="sala" style="left:50%; top:68.33%;">
+              <span class="fp-pin-dot" aria-hidden="true"></span>
+              <span class="fp-pin-label">Sala</span>
+              <span class="fp-pin-cta">▶ Recorrido</span>
             </button>
           </div>
         </div>
@@ -215,39 +260,20 @@
           <button class="filter-chip" data-filter="cocina" aria-pressed="false">Cocina</button>
           <button class="filter-chip" data-filter="bano" aria-pressed="false">Baño</button>
           <button class="filter-chip" data-filter="habitacion" aria-pressed="false">Habitación</button>
-          <button class="filter-chip" data-filter="fachada" aria-pressed="false">Fachada</button>
           <button class="filter-chip" data-filter="antes-despues" aria-pressed="false">Antes/Después</button>
         </div>
-        <!-- Cinta infinita: adelanto continuo de las fotos reales del proyecto.
-             Decorativa (aria-hidden); la experiencia accesible/interactiva vive
-             en la cuadrícula filtrable + lightbox de abajo. Contenido armado por
-             js/main.js (función actualizarMarquee) según el chip seleccionado. -->
-        <div class="marquee reveal" aria-hidden="true">
-          <div class="marquee-track" id="marqueeTrack"></div>
-        </div>
-
-        <!-- Cada tarjeta abre su propio carrusel (lightbox) con las fotos de esa zona.
-             data-fotos separa las tomas con "|": si una toma es una ruta de imagen se
-             muestra como foto real: si es texto, como placeholder — ver PLAN.md §6b. -->
-        <div class="gallery">
-          <button type="button" class="ph-tile reveal" data-zona="sala" data-titulo="Sala — Apartamento Centriktown" data-fotos="assets/proyectos/sala-1.jpg|assets/proyectos/sala-2.jpg|assets/proyectos/sala-3.jpg">
-            <img src="assets/proyectos/sala-1.jpg" alt="Sala remodelada por DÔKO Studio" loading="lazy">
-            <span class="ph-badge">3 fotos</span>
-          </button>
-          <button type="button" class="ph-tile reveal" data-zona="cocina" data-titulo="Cocina — Apartamento Centriktown" data-fotos="assets/proyectos/cocina-1.jpg|assets/proyectos/cocina-2.jpg|assets/proyectos/cocina-3.jpg">
-            <img src="assets/proyectos/cocina-1.jpg" alt="Cocina remodelada por DÔKO Studio" loading="lazy">
-            <span class="ph-badge">3 fotos</span>
-          </button>
-          <button type="button" class="ph-tile reveal" data-zona="bano" data-titulo="Baño — Apartamento Centriktown" data-fotos="assets/proyectos/bano-1.jpg|assets/proyectos/bano-2.jpg">
-            <img src="assets/proyectos/bano-1.jpg" alt="Baño remodelado por DÔKO Studio" loading="lazy">
-            <span class="ph-badge">2 fotos</span>
-          </button>
-          <button type="button" class="ph ph-tile reveal" data-zona="fachada" data-titulo="Fachada" data-fotos="Fachada renovada|Detalle de acabados exteriores|Fachada de noche">FOTO: fachada renovada<span class="ph-badge">3 fotos</span></button>
-          <button type="button" class="ph-tile reveal" data-zona="habitacion" data-titulo="Habitación — Apartamento Centriktown" data-fotos="assets/proyectos/habitacion-1.jpg|assets/proyectos/habitacion-2.jpg|assets/proyectos/habitacion-3.jpg">
-            <img src="assets/proyectos/habitacion-1.jpg" alt="Habitación remodelada por DÔKO Studio" loading="lazy">
-            <span class="ph-badge">3 fotos</span>
-          </button>
-          <button type="button" class="ph ph-tile reveal" data-zona="antes-despues" data-titulo="Antes y después" data-fotos="Antes de la remodelación|Durante la obra|Después de la remodelación">FOTO: antes y después<span class="ph-badge">3 fotos</span></button>
+        <!-- Carrusel único de proyectos: reemplaza la cinta decorativa +
+             la cuadrícula de botones que había antes (redundantes entre sí
+             ahora que el recorrido interactivo ya cubre el "mapa" y este
+             carrusel cubre las fotos). Una tarjeta por foto real, más grande
+             que la cinta anterior; clic en cualquiera abre el lightbox ya
+             posicionado en esa foto exacta. Todo el contenido lo arma
+             js/main.js (función actualizarCarrusel) según el chip elegido —
+             ver bloque "5. Filtro de galería". -->
+        <div class="carrusel-proyectos reveal">
+          <button type="button" class="carrusel-arrow carrusel-prev" aria-label="Foto anterior">‹</button>
+          <div class="carrusel-track" id="carruselTrack" role="list" aria-label="Fotos del proyecto"></div>
+          <button type="button" class="carrusel-arrow carrusel-next" aria-label="Foto siguiente">›</button>
         </div>
       </div>
     </section>
@@ -298,7 +324,7 @@
           </div>
           <div class="field">
             <label for="f-tel">Teléfono / WhatsApp</label>
-            <input type="tel" id="f-tel" name="telefono" placeholder="300 000 0000" required>
+            <input type="tel" id="f-tel" name="telefono" inputmode="tel" placeholder="300 000 0000" required>
           </div>
           <div class="field">
             <label for="f-tipo">Tipo de proyecto</label>
@@ -313,8 +339,8 @@
             <label for="f-msg">Cuéntanos tu proyecto</label>
             <textarea id="f-msg" name="mensaje" rows="4" placeholder="Ej: tengo una casa en obra gris de 120 m² y quiero terminarla…"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Enviar mensaje</button>
-          <p class="form-note" id="formNote" hidden>¡Gracias! Pronto te contactaremos.</p>
+          <button type="submit" class="btn btn-primary btn-block" id="formSubmit">Enviar mensaje</button>
+          <p class="form-note" id="formNote" aria-live="polite">¡Gracias! Pronto te contactaremos.</p>
         </form>
       </div>
     </section>
@@ -383,6 +409,6 @@
     </div>
   </div>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=4"></script>
 </body>
 </html>

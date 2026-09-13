@@ -7,11 +7,11 @@ Landing page de servicios de remodelación de viviendas: terminación de casas e
 Sin dependencias ni build: abrir `index.html` con doble clic, o servirla localmente:
 
 ```bash
-python -m http.server 8000
+npx serve -l 8000 .
 # → http://localhost:8000
 ```
 
-> **Al probar el recorrido en video** (`assets/recorrido.mp4`, sección Proyectos): `python -m http.server` no soporta HTTP Range requests, así que saltar a un capítulo que aún no se haya descargado por completo falla y el video vuelve a 0:00. No es un bug del sitio — GitHub Pages sí soporta Range requests, así que en producción funciona bien. Para probarlo en local con salto real, usar un servidor que sí soporte Range, p. ej. `npx serve`.
+> **Sobre el recorrido en video** (`assets/recorrido.mp4`, sección Proyectos): el salto a cada capítulo necesita un servidor con soporte de HTTP Range requests — por eso el comando de arriba usa `serve` y no `python -m http.server` (este último no soporta Range: saltar a un capítulo que aún no se haya descargado por completo falla y el video vuelve a 0:00 en **todos** los espacios, no solo en uno). GitHub Pages sí soporta Range requests, así que en producción funciona igual sin importar qué se use en local.
 
 ## Estructura
 

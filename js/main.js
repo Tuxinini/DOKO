@@ -1,8 +1,67 @@
 /* ==========================================================================
    DÔKO Studio — JavaScript mínimo
-   1. Menú móvil  2. Scroll reveal  3. Año del footer  4. Formulario
-   5. Filtro de galería  6. Lightbox (carrusel por zona)
+   0. Preloader  1. Menú móvil  1b. Nav activo  1c. Parallax/contador del hero
+   2. Scroll reveal  3. Año del footer  4. Formulario  5. Filtro de galería
+   6. Lightbox (carrusel por zona)  7. Recorrido interactivo (video por espacio)
    ========================================================================== */
+
+// 0. Preloader: cicla 4 fotos reales mientras el sitio termina de cargar -----
+// Se cierra cuando pasan AMBAS cosas: la página terminó de cargar (evento
+// "load") y el reel alcanzó a mostrar sus 4 fotos al menos una vez — así
+// nunca se ve un parpadeo de medio segundo en conexiones rápidas, ni bloquea
+// la página más de ~6s si "load" nunca llega a disparar (p. ej. un recurso
+// que se cuelga).
+(function () {
+  const preloader = document.getElementById("preloader");
+  if (!preloader) return;
+
+  const slides = preloader.querySelectorAll(".preloader-slide");
+  const nombreEl = document.getElementById("preloaderNombre");
+  const barra = document.getElementById("preloaderBarFill");
+  const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const pasoMs = 650; // tiempo que cada foto queda activa
+  const duracionReel = reducido ? 0 : pasoMs * slides.length;
+
+  document.body.style.overflow = "hidden";
+
+  function mostrar(i) {
+    slides.forEach((s, n) => s.classList.toggle("is-active", n === i));
+    if (nombreEl) nombreEl.textContent = slides[i].dataset.nombre || "";
+    if (barra) barra.style.width = `${((i + 1) / slides.length) * 100}%`;
+  }
+
+  mostrar(0);
+
+  let indice = 0;
+  let intervalo = null;
+  if (!reducido && slides.length > 1) {
+    intervalo = window.setInterval(() => {
+      indice = (indice + 1) % slides.length;
+      mostrar(indice);
+    }, pasoMs);
+  }
+
+  function ocultarPreloader() {
+    if (intervalo) window.clearInterval(intervalo);
+    if (barra) barra.style.width = "100%";
+    preloader.classList.add("is-hidden");
+    preloader.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    window.setTimeout(() => preloader.remove(), 550);
+  }
+
+  const cargaCompleta =
+    document.readyState === "complete"
+      ? Promise.resolve()
+      : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+  const cargaConTope = Promise.race([
+    cargaCompleta,
+    new Promise((resolve) => window.setTimeout(resolve, 6000)),
+  ]);
+  const reelCompleto = new Promise((resolve) => window.setTimeout(resolve, duracionReel));
+
+  Promise.all([cargaConTope, reelCompleto]).then(ocultarPreloader);
+})();
 
 // 1. Menú móvil -------------------------------------------------------------
 const navToggle = document.getElementById("navToggle");
@@ -20,6 +79,115 @@ nav.querySelectorAll("a").forEach((link) => {
     navToggle.setAttribute("aria-expanded", "false");
   });
 });
+
+// 1b. Nav activo: resalta el enlace de la sección que el visitante está
+// viendo, para que sepa dónde está en la página sin tener que adivinar.
+const navLinks = document.querySelectorAll('.nav a[href^="#"]');
+const seccionesNav = [...navLinks]
+  .map((link) => document.querySelector(link.getAttribute("href")))
+  .filter(Boolean);
+
+if (seccionesNav.length) {
+  // Banda angosta cerca del centro del viewport: la sección que la cruza
+  // primero al hacer scroll es la que se marca activa.
+  const navObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((link) => {
+          link.classList.toggle("is-active", link.getAttribute("href") === `#${entry.target.id}`);
+        });
+      });
+    },
+    { rootMargin: "-45% 0px -50% 0px" }
+  );
+  seccionesNav.forEach((seccion) => navObserver.observe(seccion));
+}
+
+// 1c. Hero: parallax de la foto (scroll + mouse) y contador animado ----------
+// El titular grande necesitaba movimiento real alrededor, no solo aparecer y
+// quedarse quieto. Todo respeta prefers-reduced-motion (no corre nada) y el
+// tilt de mouse solo se activa con puntero fino (no en táctil).
+(function () {
+  const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const heroSection = document.querySelector(".hero");
+  const heroFoto = document.querySelector(".hero-media img");
+
+  if (heroSection && heroFoto && !reducido) {
+    // Un solo estado combinado (scroll + mouse) para no pisarse entre sí:
+    // cada fuente actualiza su parte y se renderiza junto en un rAF.
+    const despl = { scroll: 0, mouseX: 0, mouseY: 0 };
+    let pendiente = false;
+
+    function render() {
+      heroFoto.style.transform = `translate(${despl.mouseX}px, ${despl.scroll + despl.mouseY}px)`;
+      pendiente = false;
+    }
+    function pedirRender() {
+      if (!pendiente) {
+        window.requestAnimationFrame(render);
+        pendiente = true;
+      }
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        despl.scroll = Math.min(window.scrollY * 0.12, 45); // tope: nunca se siente descontrolado
+        pedirRender();
+      },
+      { passive: true }
+    );
+
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      heroSection.addEventListener("mousemove", (e) => {
+        const rect = heroSection.getBoundingClientRect();
+        despl.mouseX = -(((e.clientX - rect.left) / rect.width) - 0.5) * 16;
+        despl.mouseY = -(((e.clientY - rect.top) / rect.height) - 0.5) * 16;
+        pedirRender();
+      });
+      heroSection.addEventListener("mouseleave", () => {
+        despl.mouseX = 0;
+        despl.mouseY = 0;
+        pedirRender();
+      });
+    }
+  }
+
+  // Contador animado: los números de la barra de estadísticas suben desde 0
+  // cuando entran en pantalla en vez de aparecer ya escritos. Funciona con
+  // cualquier formato ("+50", "100%", "1 año") vía una sola expresión regular.
+  const cifras = document.querySelectorAll(".hero-stats strong");
+  if (cifras.length && !reducido) {
+    const cifrasObserver = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          obs.unobserve(entry.target);
+          const el = entry.target;
+          const textoFinal = el.textContent.trim();
+          const match = textoFinal.match(/^(\D*)(\d+)(.*)$/);
+          if (!match) return; // formato inesperado: se deja el texto tal cual
+          const [, prefijo, numero, sufijo] = match;
+          const meta = parseInt(numero, 10);
+          const duracionMs = 1100;
+          const inicio = performance.now();
+
+          function paso(ahora) {
+            const progreso = Math.min((ahora - inicio) / duracionMs, 1);
+            const suavizado = 1 - Math.pow(1 - progreso, 3); // ease-out cúbico
+            el.textContent = `${prefijo}${Math.round(meta * suavizado)}${sufijo}`;
+            if (progreso < 1) window.requestAnimationFrame(paso);
+            else el.textContent = textoFinal; // valor exacto al final, sin sorpresas de redondeo
+          }
+          window.requestAnimationFrame(paso);
+        });
+      },
+      { threshold: 0.6 }
+    );
+    cifras.forEach((el) => cifrasObserver.observe(el));
+  }
+})();
 
 // 2. Animación de entrada al hacer scroll ------------------------------------
 // Todo elemento con la clase .reveal aparece con fade + subida al entrar en pantalla.
@@ -42,68 +210,122 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 // 4. Formulario de contacto ---------------------------------------------------
 // TODO (Fase 3 del PLAN.md): conectar a Formspree o redirigir a WhatsApp.
-// Por ahora solo muestra la confirmación y limpia los campos.
+// Por ahora simula el envío (breve estado "Enviando…" en el botón, para que
+// se sienta una acción real en curso) y muestra la confirmación animada.
 const form = document.getElementById("contactForm");
 const formNote = document.getElementById("formNote");
+const formSubmit = document.getElementById("formSubmit");
+const textoEnvioOriginal = formSubmit.textContent;
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  formNote.hidden = false;
-  form.reset();
+  formSubmit.disabled = true;
+  formSubmit.textContent = "Enviando…";
+  formNote.classList.remove("is-visible");
+
+  window.setTimeout(() => {
+    formSubmit.disabled = false;
+    formSubmit.textContent = textoEnvioOriginal;
+    formNote.classList.add("is-visible");
+    form.reset();
+  }, 600);
 });
 
-// 5. Filtro de galería por zona (carrusel deslizable en móvil + cinta infinita) -
+// 5. Filtro de proyectos por zona + carrusel único --------------------------
+// Reemplaza la cinta decorativa + la cuadrícula de botones que había antes
+// (dos formas de ver las mismas fotos, redundantes entre sí). Una sola
+// fuente de datos por zona alimenta el carrusel Y el lightbox.
 const filterChips = document.querySelectorAll(".filter-chip");
-const galleryTiles = document.querySelectorAll(".gallery .ph-tile");
-const gallery = document.querySelector(".gallery");
-const marquee = document.querySelector(".marquee");
-const marqueeTrack = document.getElementById("marqueeTrack");
+const carruselTrack = document.getElementById("carruselTrack");
+const carruselPrev = document.querySelector(".carrusel-prev");
+const carruselNext = document.querySelector(".carrusel-next");
 
-// Mismas fotos que data-fotos de cada tarjeta, listadas aquí para poder
-// armar la cinta infinita filtrada por zona sin duplicar las rutas a mano.
-const fotosProyecto = [
-  { zona: "sala", src: "assets/proyectos/sala-1.jpg" },
-  { zona: "sala", src: "assets/proyectos/sala-2.jpg" },
-  { zona: "sala", src: "assets/proyectos/sala-3.jpg" },
-  { zona: "cocina", src: "assets/proyectos/cocina-1.jpg" },
-  { zona: "cocina", src: "assets/proyectos/cocina-2.jpg" },
-  { zona: "cocina", src: "assets/proyectos/cocina-3.jpg" },
-  { zona: "bano", src: "assets/proyectos/bano-1.jpg" },
-  { zona: "bano", src: "assets/proyectos/bano-2.jpg" },
-  { zona: "habitacion", src: "assets/proyectos/habitacion-1.jpg" },
-  { zona: "habitacion", src: "assets/proyectos/habitacion-2.jpg" },
-  { zona: "habitacion", src: "assets/proyectos/habitacion-3.jpg" },
-];
+const PROYECTOS = {
+  sala: {
+    titulo: "Sala — Apartamento Centriktown",
+    fotos: ["assets/proyectos/sala-1.jpg", "assets/proyectos/sala-2.jpg", "assets/proyectos/sala-3.jpg"],
+  },
+  cocina: {
+    titulo: "Cocina — Apartamento Centriktown",
+    fotos: ["assets/proyectos/cocina-1.jpg", "assets/proyectos/cocina-2.jpg", "assets/proyectos/cocina-3.jpg"],
+  },
+  bano: {
+    titulo: "Baño — Apartamento Centriktown",
+    fotos: ["assets/proyectos/bano-1.jpg", "assets/proyectos/bano-2.jpg"],
+  },
+  habitacion: {
+    titulo: "Habitación — Apartamento Centriktown",
+    fotos: ["assets/proyectos/habitacion-1.jpg", "assets/proyectos/habitacion-2.jpg", "assets/proyectos/habitacion-3.jpg"],
+  },
+  // Sin fotos reales todavía — el carrusel muestra una tarjeta especial en
+  // vez de desaparecer por completo (ver PLAN.md §6 para reemplazarlas).
+  "antes-despues": { titulo: "Antes y después", fotos: [] },
+};
 
-// Reconstruye la cinta infinita mostrando solo las fotos de la zona elegida.
-// Si esa zona no tiene fotos reales todavía (p. ej. Fachada), la cinta se oculta.
-function actualizarMarquee(zona) {
-  const fotos =
-    zona === "todos" ? fotosProyecto : fotosProyecto.filter((f) => f.zona === zona);
+// Reconstruye el carrusel con las fotos de la zona elegida (o todas). Cada
+// tarjeta es una foto real y clicable — abre el lightbox ya posicionado en
+// esa foto exacta, no siempre en la primera.
+function actualizarCarrusel(zona) {
+  const zonasAMostrar =
+    zona === "todos" ? Object.keys(PROYECTOS).filter((z) => PROYECTOS[z].fotos.length > 0) : [zona];
 
-  if (fotos.length === 0) {
-    marquee.classList.add("is-hidden");
-    return;
+  const tarjetas = [];
+  zonasAMostrar.forEach((z) => {
+    const info = PROYECTOS[z];
+    if (!info) return;
+    info.fotos.forEach((src, indice) => {
+      tarjetas.push(
+        `<button type="button" class="carrusel-card" role="listitem" data-zona="${z}" data-indice="${indice}">` +
+          `<img src="${src}" alt="${info.titulo}" loading="lazy"></button>`
+      );
+    });
+  });
+
+  if (tarjetas.length === 0 && zona === "antes-despues") {
+    // Tratamiento especial: adelanta el slider de transformación prometido
+    // en el roadmap (PLAN.md Fase 4) en vez de un texto de placeholder plano —
+    // sin fotos inventadas, solo la promesa visual de lo que viene.
+    carruselTrack.innerHTML =
+      '<div class="carrusel-card ph antes-despues" role="listitem" aria-label="Antes y después — muy pronto">' +
+      '<div class="ad-lado ad-antes">Antes</div>' +
+      '<div class="ad-lado ad-despues">Después</div>' +
+      '<span class="ad-badge">Muy pronto</span>' +
+      "</div>";
+  } else if (tarjetas.length === 0) {
+    carruselTrack.innerHTML = '<div class="carrusel-card ph" role="listitem">Fotos próximamente</div>';
+  } else {
+    carruselTrack.innerHTML = tarjetas.join("");
   }
-  marquee.classList.remove("is-hidden");
-
-  const html = fotos
-    .map((f) => `<img src="${f.src}" alt="" loading="lazy">`)
-    .join("");
-  marqueeTrack.innerHTML = html + html; // duplicado: loop infinito sin costura
-
-  // Ritmo proporcional a la cantidad de fotos, para que la velocidad de
-  // desplazamiento se sienta pareja sin importar cuántas fotos haya.
-  marqueeTrack.style.animationDuration = `${Math.max(fotos.length * 3.5, 10)}s`;
+  carruselTrack.scrollTo({ left: 0 });
 }
 
-// Resalta en la planta el espacio que corresponde a la zona activa. Si la
-// zona no tiene un espacio en la planta (p. ej. "todos" o "fachada"), no
-// queda ninguno resaltado.
-function resaltarEspacioPlanta(zona) {
-  document.querySelectorAll(".fp-room").forEach((room) => {
-    room.classList.toggle("is-active", room.id === `fp-${zona}`);
-  });
+carruselTrack.addEventListener("click", (e) => {
+  const tarjeta = e.target.closest(".carrusel-card:not(.ph)");
+  if (!tarjeta) return;
+  const info = PROYECTOS[tarjeta.dataset.zona];
+  if (!info) return;
+  abrirLightbox(info.titulo, info.fotos, Number(tarjeta.dataset.indice), tarjeta);
+});
+
+// Desplaza el carrusel una "página" (ancho de tarjeta + separación) por clic.
+function anchoTarjetaCarrusel() {
+  const tarjeta = carruselTrack.querySelector(".carrusel-card");
+  return tarjeta ? tarjeta.getBoundingClientRect().width + 20 : 340;
+}
+if (carruselPrev && carruselNext) {
+  carruselPrev.addEventListener("click", () => carruselTrack.scrollBy({ left: -anchoTarjetaCarrusel(), behavior: "smooth" }));
+  carruselNext.addEventListener("click", () => carruselTrack.scrollBy({ left: anchoTarjetaCarrusel(), behavior: "smooth" }));
+}
+
+// Cambia la foto activa del lienzo del recorrido interactivo (.fp-canvas) a
+// la de la zona dada. Si la zona no tiene foto en el lienzo (p. ej. "todos" o
+// "antes-después", que no son espacios recorribles en video), se deja la
+// última foto activa en vez de apagar el lienzo entero.
+function mostrarFotoCanvas(zona) {
+  const fotos = document.querySelectorAll(".fp-canvas-photo");
+  const coincide = [...fotos].some((foto) => foto.dataset.zona === zona);
+  if (!coincide) return;
+  fotos.forEach((foto) => foto.classList.toggle("is-active", foto.dataset.zona === zona));
 }
 
 filterChips.forEach((chip) => {
@@ -116,22 +338,36 @@ filterChips.forEach((chip) => {
     chip.setAttribute("aria-pressed", "true");
 
     const zona = chip.dataset.filter;
-    galleryTiles.forEach((tile) => {
-      const coincide = zona === "todos" || tile.dataset.zona === zona;
-      tile.classList.toggle("is-hidden", !coincide);
-    });
-
-    actualizarMarquee(zona);
-    resaltarEspacioPlanta(zona);
-    gallery.scrollTo({ left: 0, behavior: "smooth" });
+    actualizarCarrusel(zona);
+    mostrarFotoCanvas(zona);
   });
 });
 
-actualizarMarquee("todos"); // estado inicial: cinta con todas las fotos
+actualizarCarrusel("todos"); // estado inicial: todas las fotos reales
+
+// Atrapa el foco con Tab/Shift+Tab dentro de un diálogo modal abierto, para
+// que no se escape hacia contenido oculto detrás del backdrop (lightbox y
+// recorrido en video comparten esta lógica).
+function atraparFoco(e, contenedor) {
+  if (e.key !== "Tab") return;
+  const focosables = contenedor.querySelectorAll(
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  if (focosables.length === 0) return;
+  const primero = focosables[0];
+  const ultimo = focosables[focosables.length - 1];
+  if (e.shiftKey && document.activeElement === primero) {
+    e.preventDefault();
+    ultimo.focus();
+  } else if (!e.shiftKey && document.activeElement === ultimo) {
+    e.preventDefault();
+    primero.focus();
+  }
+}
 
 // 6. Lightbox: carrusel de fotos por zona --------------------------------------
-// Cada tarjeta de la galería abre su propio carrusel (distinto por zona),
-// leyendo las fotos desde su atributo data-fotos (separadas por "|").
+// Lo abre cualquier tarjeta del carrusel de #proyectos (bloque "5"), ya
+// posicionado en la foto exacta que se tocó, no siempre en la primera.
 const lightbox = document.getElementById("lightbox");
 const lightboxTitle = document.getElementById("lightboxTitle");
 const lightboxContador = document.getElementById("lightboxContador");
@@ -156,17 +392,19 @@ function irASlide(indice) {
   lightboxContador.textContent = `${lightboxIndex + 1} / ${lightboxTotal}`;
 }
 
-function abrirLightbox(tile) {
-  const fotos = (tile.dataset.fotos || "").split("|").filter(Boolean);
-  if (fotos.length === 0) return;
+// titulo/fotos vienen de PROYECTOS[zona] (bloque "5"); indiceInicial abre
+// directamente en la foto que se tocó en el carrusel, no siempre en la
+// primera; elementoOrigen es a quien se le devuelve el foco al cerrar.
+function abrirLightbox(titulo, fotos, indiceInicial, elementoOrigen) {
+  if (!fotos || fotos.length === 0) return;
 
-  lightboxUltimoFoco = tile;
-  lightboxTitle.textContent = tile.dataset.titulo || "";
+  lightboxUltimoFoco = elementoOrigen || document.activeElement;
+  lightboxTitle.textContent = titulo || "";
   lightboxTrack.innerHTML = fotos
     .map((foto) => {
       const esFotoReal = /\.(jpe?g|png|webp)$/i.test(foto);
       return esFotoReal
-        ? `<img class="lightbox-slide" src="${foto}" alt="${tile.dataset.titulo || ""}" loading="lazy">`
+        ? `<img class="lightbox-slide" src="${foto}" alt="${titulo || ""}" loading="lazy">`
         : `<div class="ph lightbox-slide">FOTO: ${foto}</div>`;
     })
     .join("");
@@ -178,7 +416,7 @@ function abrirLightbox(tile) {
     .join("");
 
   lightboxTotal = fotos.length;
-  irASlide(0);
+  irASlide(indiceInicial || 0);
 
   lightbox.classList.add("is-open");
   lightbox.setAttribute("aria-hidden", "false");
@@ -193,10 +431,6 @@ function cerrarLightbox() {
   alejarCamara(); // si se abrió desde la planta, la cámara vuelve a la vista general
   if (lightboxUltimoFoco) lightboxUltimoFoco.focus();
 }
-
-galleryTiles.forEach((tile) => {
-  tile.addEventListener("click", () => abrirLightbox(tile));
-});
 
 lightbox.querySelectorAll("[data-lightbox-close]").forEach((el) => {
   el.addEventListener("click", cerrarLightbox);
@@ -216,6 +450,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") cerrarLightbox();
   if (e.key === "ArrowLeft") irASlide(lightboxIndex - 1);
   if (e.key === "ArrowRight") irASlide(lightboxIndex + 1);
+  atraparFoco(e, lightbox);
 });
 
 // Deslizar con el dedo dentro del carrusel
@@ -235,30 +470,35 @@ lightboxTrack.addEventListener("touchend", (e) => {
   }
 });
 
-// 7. Planta interactiva de acabados --------------------------------------------
-// Cada espacio de la planta es una entrada visual a los mismos datos de
-// siempre: al tocarlo, la cámara (toda la planta, hotspots incluidos) hace
-// zoom hacia ese espacio, se activa el chip de esa zona (filtra la galería de
-// fotos y actualiza la cinta, por si el visitante quiere fotos fijas después)
-// y, cuando el acercamiento termina, se abre el recorrido en video saltando
-// justo al momento en que se entra a ese espacio. Al cerrarlo, la cámara
-// vuelve a la vista general (ver alejarCamara() en cerrarRecorrido()).
+// 7. Recorrido interactivo de acabados ------------------------------------------
+// Cada pin es una entrada visual a los mismos datos de siempre, flotando
+// sobre un lienzo de fotos reales (.fp-canvas) en vez de un plano dibujado:
+// al pasar el mouse o el foco por un pin, su foto se vuelve la activa en el
+// lienzo (previsualización); al tocarlo, la cámara (todo el stage, pines
+// incluidos) hace zoom hacia ese punto, se activa el chip de esa zona (filtra
+// la galería de fotos y actualiza la cinta, por si el visitante quiere fotos
+// fijas después) y, cuando el acercamiento termina, se abre el recorrido en
+// video saltando justo al momento en que se entra a ese espacio. Al
+// cerrarlo, la cámara vuelve a la vista general (ver alejarCamara() en
+// cerrarRecorrido()).
 const floorplanStage = document.querySelector(".floorplan-stage");
-const fpHotspots = document.querySelectorAll(".fp-hotspot");
+const fpPins = document.querySelectorAll(".fp-pin");
 const prefiereMovimientoReducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// Centro de cada espacio en % del stage (mismas coordenadas que left/top/width/
-// height de cada .fp-hotspot en el HTML) — es el punto hacia el que "vuela" la
-// cámara. Si se agrega un espacio nuevo, agregar aquí su centro también.
-const centrosZona = {
-  habitacion: { x: 23.75, y: 25 },
-  bano: { x: 50, y: 25 },
-  cocina: { x: 76.25, y: 25 },
-  sala: { x: 50, y: 68.33 },
+// Registro único por espacio: centro (% del stage, para el zoom de cámara —
+// mismas coordenadas que left/top de cada .fp-pin en el HTML) y el segundo
+// exacto del recorrido en video. Antes vivían en dos objetos separados
+// (centrosZona / capitulosVideo) con las mismas 4 claves repetidas; un solo
+// lugar evita que se desincronicen al agregar un espacio.
+const ZONAS = {
+  habitacion: { centro: { x: 23.75, y: 25 }, segundoVideo: 60 },
+  bano: { centro: { x: 50, y: 25 }, segundoVideo: 48 },
+  cocina: { centro: { x: 76.25, y: 25 }, segundoVideo: 9 },
+  sala: { centro: { x: 50, y: 68.33 }, segundoVideo: 27 },
 };
 
 function acercarCamara(zona) {
-  const centro = centrosZona[zona];
+  const centro = ZONAS[zona] && ZONAS[zona].centro;
   if (!floorplanStage || !centro) return;
   floorplanStage.style.transformOrigin = `${centro.x}% ${centro.y}%`;
   floorplanStage.classList.add("is-zoomed");
@@ -268,24 +508,44 @@ function alejarCamara() {
   if (floorplanStage) floorplanStage.classList.remove("is-zoomed");
 }
 
-fpHotspots.forEach((hotspot) => {
-  hotspot.addEventListener("click", () => {
-    const zona = hotspot.dataset.zona;
-    const chip = document.querySelector(`.filter-chip[data-filter="${zona}"]`);
+// Abre el recorrido cuando el acercamiento de cámara termina de verdad, en
+// vez de copiar a mano la duración de la transición CSS (que se podía
+// desincronizar si alguna de las dos cambiaba sin tocar la otra): se escucha
+// transitionend sobre la propiedad transform, con un margen de seguridad leído
+// de la duración real declarada en CSS por si el evento no llega a disparar.
+function acercarCamaraYAbrirRecorrido(zona) {
+  const chip = document.querySelector(`.filter-chip[data-filter="${zona}"]`);
+  mostrarFotoCanvas(zona);
+  acercarCamara(zona);
+  if (chip) chip.click(); // ya filtra la galería y actualiza la cinta
 
-    acercarCamara(zona);
-    if (chip) chip.click(); // ya resalta la planta, filtra la galería y actualiza la cinta
+  if (prefiereMovimientoReducido || !floorplanStage) {
+    abrirRecorrido(zona);
+    return;
+  }
 
-    // El recorrido se abre justo cuando el acercamiento termina (mismos 0.48s
-    // de .floorplan-stage.is-zoomed en styles.css); se omite la espera si el
-    // usuario prefiere menos movimiento.
-    window.setTimeout(
-      () => {
-        abrirRecorrido(zona);
-      },
-      prefiereMovimientoReducido ? 0 : 460
-    );
-  });
+  let abierto = false;
+  const abrirUnaVez = () => {
+    if (abierto) return;
+    abierto = true;
+    floorplanStage.removeEventListener("transitionend", alTerminarZoom);
+    abrirRecorrido(zona);
+  };
+  const alTerminarZoom = (e) => {
+    if (e.target === floorplanStage && e.propertyName === "transform") abrirUnaVez();
+  };
+  floorplanStage.addEventListener("transitionend", alTerminarZoom);
+
+  const duracionMs = parseFloat(getComputedStyle(floorplanStage).transitionDuration || "0") * 1000;
+  window.setTimeout(abrirUnaVez, duracionMs + 80);
+}
+
+fpPins.forEach((pin) => {
+  pin.addEventListener("click", () => acercarCamaraYAbrirRecorrido(pin.dataset.zona));
+  // Previsualización: pasar el mouse o el foco por un pin adelanta su foto en
+  // el lienzo antes de comprometerse a tocarlo.
+  pin.addEventListener("mouseenter", () => mostrarFotoCanvas(pin.dataset.zona));
+  pin.addEventListener("focus", () => mostrarFotoCanvas(pin.dataset.zona));
 });
 
 // Recorrido: video real del apartamento, con un capítulo (segundo exacto)
@@ -296,13 +556,6 @@ const recorrido = document.getElementById("recorrido");
 const recorridoVideo = document.getElementById("recorridoVideo");
 const recorridoCapitulos = document.querySelectorAll(".recorrido-capitulo");
 let recorridoUltimoFoco = null;
-
-const capitulosVideo = {
-  cocina: 9,
-  sala: 27,
-  bano: 48,
-  habitacion: 60,
-};
 
 // Salta el video al segundo indicado y lo reproduce. Si todavía no se cargaron
 // los metadatos (readyState 0 — puede pasar en el primer clic con conexiones
@@ -322,7 +575,7 @@ function saltarA(segundo) {
 }
 
 function abrirRecorrido(zona) {
-  const segundo = capitulosVideo[zona];
+  const segundo = ZONAS[zona] && ZONAS[zona].segundoVideo;
   if (segundo === undefined) return;
 
   recorridoUltimoFoco = document.activeElement;
@@ -357,7 +610,7 @@ recorrido.querySelectorAll("[data-recorrido-close]").forEach((el) => {
 
 recorridoCapitulos.forEach((btn) => {
   btn.addEventListener("click", () => {
-    const segundo = capitulosVideo[btn.dataset.zona];
+    const segundo = ZONAS[btn.dataset.zona] && ZONAS[btn.dataset.zona].segundoVideo;
     if (segundo === undefined) return;
     saltarA(segundo);
     recorridoCapitulos.forEach((b) => b.classList.toggle("is-active", b === btn));
@@ -365,5 +618,7 @@ recorridoCapitulos.forEach((btn) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && recorrido.classList.contains("is-open")) cerrarRecorrido();
+  if (!recorrido.classList.contains("is-open")) return;
+  if (e.key === "Escape") cerrarRecorrido();
+  atraparFoco(e, recorrido);
 });
